@@ -1,3 +1,5 @@
+"""streamlit plots for the app"""
+
 import plotly.express as px
 import streamlit as st
 from . import tools
