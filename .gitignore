@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+**/__pycache__
+*.py[cod]
+*$py.class
+
+# General untracked file formats
+*.log
+*.pbf
+*.zip
+
+# Untrack some Jupyter changes
+.ipynb_checkpoints
+notebooks/
+
+# Untrack folders
+data/
