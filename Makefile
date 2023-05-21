@@ -7,6 +7,7 @@ get_data:
 
 install_env:
 	pip install -r pypsa-earth-lit/requirements.txt
+	python setup.py install
 
 run_app:
 	streamlit run pypsa-earth-lit/app/index.py
