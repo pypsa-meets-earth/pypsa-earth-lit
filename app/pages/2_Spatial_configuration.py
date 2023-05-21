@@ -1,69 +1,159 @@
 import streamlit as st
-import app.pages.utils.spatial_configuration_helper as helper
-import app.pages.utils.tools as tools
+st.set_page_config(
+    layout="wide"
+)
+
+
+import app.pages.utils.spatial_pre_run as helper
+
+import os
+import pathlib
+
+import pandas as pd
+import pypsa
+import numpy as np
 import plotly.express as px
+import xarray as xr
+import geopandas as gpd
 import plotly.graph_objects as go
+import shapely.geometry
+import math
+import yaml
+import hvplot.pandas
+import holoviews as hv
+from bokeh.models import HoverTool  
+from bokeh.plotting import figure, show
+from holoviews import Store
+import networkx as nx
+import hvplot.networkx as hvnx
+from shapely.geometry import Point, LineString, shape
 
 
-def main():
-    network_map = tools.get_network_map("pypsa-earth")
 
-    name_network_map = {}
+data=helper.make_return_dict()
+st.title("System operation")
 
-    for name, file_name in network_map.keys():
-        name_network_map[name] = network_map[(name, file_name)]
 
-    st.title("Spatial configuration")
+_, main_col, _ = st.columns([1,90,1])
 
+def scenario_formatter(scenario):
+    return helper.config["scenario_names"][scenario]
+
+with main_col:
     selected_network = st.selectbox(
-        "Select your metric",
-        list(name_network_map.keys()),
+        "Select which scenario's plot you want to see :",
+        list(data.keys()),
+        format_func=scenario_formatter
     )
 
-    n = name_network_map[selected_network]
+country_data=data.get(selected_network)
 
-    options = st.multiselect(
-        "select features", ["lines", "generators"], default=["generators"]
+_, col1, col2, col3, _ = st.columns([1,30,30,30,1])
+
+graph_opts = dict(
+        xaxis=None,
+        yaxis=None,
+        active_tools=['pan', 'wheel_zoom']
     )
 
-    df = helper.get_sctter_points(n)
+gen_parameters=[param for param in helper.config["gen_spatial_parameters"]]
+gen_unique_names=country_data["gen_unique_names"]
+polygon_gpd=country_data["polygon_gpd"]
+points_gpd=country_data["nodes_gpd"]
+map_points_df=country_data["nodes_polygon_df"]
 
-    line_df = helper.get_lines(n)
+def spatial_param_formatter(param):
+    return helper.config["gen_spatial_parameters"][param]["nice_name"]+" "+helper.config["gen_spatial_parameters"][param]["unit"]
 
-    fig = px.scatter_mapbox(
-        df,
-        lat="y",
-        lon="x",
-        hover_name="name",
-        size="size",
-        color="size",
-        opacity=1 if options.__contains__("generators") else 0,
+def carrier_formatter(carrier):
+    return helper.config["carrier"][carrier]
+
+with col1:
+    st.subheader("Regions")
+    colorpeth_param_carrier = st.selectbox(
+            "Generator", gen_unique_names, 
+            format_func=  carrier_formatter,
+            key="colorpeth_param_carrier"
+
+        )
+    colorpeth_param_value = st.selectbox(
+            "Parameter", gen_parameters,    
+            format_func=  spatial_param_formatter,
+            key="colorpeth_param_value"
+        )
+
+    colorpeth_param = f"{colorpeth_param_carrier}___{colorpeth_param_value}"
+
+    if(colorpeth_param not in polygon_gpd.columns):
+        selecter_col_data=map_points_df.loc[
+        (colorpeth_param_carrier,colorpeth_param_value)].values.tolist()
+        polygon_gpd.insert(loc=0,column=colorpeth_param,value=selecter_col_data)
+
+
+    kargs=dict(
+        cmap=helper.config["carrier_colors"][colorpeth_param_carrier],
     )
+    
+    plot_area=polygon_gpd.hvplot(
+    geo=True,
+     tiles='OSM', alpha=0.8, 
+            # hover_cols=['name'],
+            width=800, height=600,c=colorpeth_param,**kargs).opts(**graph_opts)
+    
+    
 
-    if options.__contains__("lines"):
-        for i in range(len(line_df)):
-            s_nom = line_df["width"][i]
-            fig.add_trace(
-                go.Scattermapbox(
-                    lon=[line_df["source_x"][i], line_df["destination_x"][i]],
-                    lat=[line_df["source_y"][i], line_df["destination_y"][i]],
-                    mode="lines",
-                    line=dict(width=line_df["width"][i] / 800),
-                    hovertemplate=f"s_nom: {s_nom:.2f},   name: {line_df['index'][i]}",
-                    hovertext=line_df["width"][i],
-                    name=line_df["index"][i],
-                    hoverinfo="all",
-                    showlegend=False,
-                )
-            )
-
-    fig.update_layout(
-        mapbox_style="carto-positron",
-        mapbox_zoom=4.5,
-        mapbox_center={"lat": sum(df["y"]) / len(df), "lon": sum(df["x"]) / len(df)},
+with col3:
+    st.subheader("Nodes")
+    points_param_carrier = st.selectbox(
+            "Generator", gen_unique_names,
+            format_func=  carrier_formatter,
+           key="points_param_carrier"
+        )
+    points_param_value = st.selectbox(
+            "Parameter", gen_parameters,
+            format_func=  spatial_param_formatter,
+            key="points_param_value"
     )
+    points_param=f"{points_param_carrier}___{points_param_value}"
+    points_param_size=f"{points_param_carrier}___{points_param_value}___size"
 
-    st.plotly_chart(fig, use_container_width=False, theme="streamlit")
+    if(points_param not in points_gpd.columns):
+        # adding values
+        selecter_col_data=map_points_df.loc[
+        (points_param_carrier
+        ,points_param_value) ].values.tolist()
+        points_gpd.insert(loc=0,column=points_param,value=selecter_col_data)
+        # adding size factor
+        scale = pd.Series(points_gpd[points_param]).max() 
+        temp_size=pd.DataFrame()
+        temp_size["scale"]=(1+points_gpd[points_param]/scale)*500
+        points_gpd.insert(loc=0,column=points_param_size,value=temp_size["scale"].values.tolist())
+    
+
+    plot_ponts = points_gpd.hvplot(
+            geo=True,
+            hovercols=["name"],
+            size=points_param_size,
+            # s = 300,
+            c=points_param,
+            alpha=0.7,
+            color=helper.config["tech_colors"][points_param_carrier]
+        ).opts(**graph_opts)
+
+with col2:
+    st.subheader("Network")
+    line_option = st.selectbox(
+            "Option", country_data["line_parameters"],
+            key="line_option"
+            
+        )
+    G=country_data["lines_edge_netwok"]
+    pos=country_data["lines_edge_pos_dict"]
+    scale = pd.Series(nx.get_edge_attributes(G,line_option )).max() / 10
+    
+    network_lines_plot=hvnx.draw_networkx_edges(G, pos=pos,edge_color=line_option,responsive=True,
+            inspection_policy="edges",node_color='#A0C0E2',geo=True,edge_width=hv.dim(line_option)/scale ).opts(**graph_opts)
 
 
-main()
+
+st.bokeh_chart(hv.render(plot_area*plot_ponts*network_lines_plot, backend='bokeh'), use_container_width=True)

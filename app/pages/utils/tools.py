@@ -3,6 +3,15 @@ import pathlib
 import streamlit as st
 import pandas as pd
 import pypsa
+import yaml
+
+@st.cache_resource
+def return_color_from_yaml(config_file):
+    with open(config_file, "r") as f:
+       config = yaml.safe_load(f)
+    return config
+
+config=return_color_from_yaml("app/pages/utils/config.yaml")
 
 
 @st.cache_resource
@@ -17,11 +26,12 @@ def get_network_map(pypsa_earth_path):
         for dir_child in os.listdir(pathlib.Path(entry, "networks")):
             if not dir_child.endswith(".nc"):
                 continue
-            networks[(dir, dir_child)] = pypsa.Network(
+            networks[dir] = pypsa.Network(
                 pathlib.Path(entry, "networks", dir_child)
             )
     print(networks)
     return networks
+
 
 
 def get_df_for_parameter(network_map, parameter, get_values_fn, get_cols_fn):
@@ -39,8 +49,16 @@ def get_df_for_parameter(network_map, parameter, get_values_fn, get_cols_fn):
                 child_arr.append(0)
         df_array.append(child_arr)
 
-    indices = ["-".join(key) for key in network_map.keys()]
-    wide_form_df = pd.DataFrame(df_array, columns=all_column_names, index=indices)
+    indices = network_map.keys()
+    indices = [config["scenario_names"][i] for i in indices]
+    nice_col_name=[]
+    for col_name in all_column_names:
+        if col_name in list(config["carrier"]):
+            nice_col_name.append(config["carrier"][col_name])
+        else:
+            nice_col_name.append(col_name)
+    
+    wide_form_df = pd.DataFrame(df_array, columns=nice_col_name, index=indices)
     return wide_form_df
 
 
