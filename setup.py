@@ -12,5 +12,4 @@ setup(
     version="1.0",
     packages=find_packages(),
     install_requires=get_requirements("requirements.txt"),
-    extras_require={"top_level": get_requirements("requirements.in")},
 )
