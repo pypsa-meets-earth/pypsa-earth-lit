@@ -1,11 +1,17 @@
-"""functions to help with plotting"""
-
+import os
+import pathlib
+import streamlit as st
 import pandas as pd
+import pypsa
+
 
 def get_lines(n1):
-    buses_map = {n1.buses.index[i]: {"x": n1.buses["x"][i], "y": n1.buses["y"][i]} for i in range(len(n1.buses))}
+    buses_map = {
+        n1.buses.index[i]: {"x": n1.buses["x"][i], "y": n1.buses["y"][i]}
+        for i in range(len(n1.buses))
+    }
 
-    line_df=pd.DataFrame()
+    line_df = pd.DataFrame()
 
     source_x_list = []
     source_y_list = []
@@ -37,14 +43,13 @@ def get_sctter_points(n1):
     df["y"] = n1.buses["y"]
     df["name"] = n1.buses.index
     df["cost"] = n1.stores["marginal_cost"]
-    df["size"] = (df["cost"] - (df["cost"].sum()/len(df))) * 1000
-
+    df["size"] = (df["cost"] - (df["cost"].sum() / len(df))) * 1000
 
     dropped_indices = []
     for i in range(len(df)):
         if "battery" not in df["name"][i]:
             dropped_indices.append(df["name"][i])
-    
+
     df.drop(index=dropped_indices, inplace=True)
 
     return df

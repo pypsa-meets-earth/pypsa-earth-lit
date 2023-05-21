@@ -14,3 +14,10 @@ notebooks/
 
 # Untrack folders
 data/
+pypsa-earth/
+.venv/
+
+# 
+settings.json
+```
+pypsa_dashboard.egg-info
