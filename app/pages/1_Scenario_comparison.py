@@ -20,7 +20,9 @@ def main():
     df = tools.get_df_for_parameter(
         network_map, option, tools.add_values_for_statistics, tools.get_stats_col_names
     )
-    st.plotly_chart(px.bar(df, y=df.columns, title=option))
+    st.plotly_chart(px.bar(df, y=df.columns, title=option),
+                    use_cointainer_width=True
+                    )
 
     ##### second dropdown plotting n.carrier #####
     option = st.selectbox(

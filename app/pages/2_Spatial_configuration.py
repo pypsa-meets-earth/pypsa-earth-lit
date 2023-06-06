@@ -26,6 +26,18 @@ def main():
         "select features", ["lines", "generators"], default=["generators"]
     )
 
+    line_parameter = st.selectbox(
+        "Select your metric",
+        [
+            "Total Capacity (GW)",
+            # "Reinforcement (GW)",
+            "Original Capacity (GW)",
+            "Maximum Capacity (GW)",
+            # "Technology",
+            "Length (km)",
+        ],
+    )
+
     df = helper.get_sctter_points(n)
 
     line_df = helper.get_lines(n)
@@ -42,15 +54,20 @@ def main():
 
     if options.__contains__("lines"):
         for i in range(len(line_df)):
-            s_nom = line_df["width"][i]
+            s_nom = line_df["Length (km)"][i]
+            line_size_factor = 1000
+            if line_parameter == "Length (km)":
+                line_size_factor = 100
+            if line_parameter == "Total Capacity (GW)":
+                line_size_factor = 800
             fig.add_trace(
                 go.Scattermapbox(
                     lon=[line_df["source_x"][i], line_df["destination_x"][i]],
                     lat=[line_df["source_y"][i], line_df["destination_y"][i]],
                     mode="lines",
-                    line=dict(width=line_df["width"][i] / 800),
+                    line=dict(width=line_df[line_parameter][i] / line_size_factor),
                     hovertemplate=f"s_nom: {s_nom:.2f},   name: {line_df['index'][i]}",
-                    hovertext=line_df["width"][i],
+                    hovertext=line_df["Length (km)"][i],
                     name=line_df["index"][i],
                     hoverinfo="all",
                     showlegend=False,
