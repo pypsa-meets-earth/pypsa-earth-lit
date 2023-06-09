@@ -1,8 +1,6 @@
-import streamlit as st
-import app.pages.utils.spatial_pre_run as helper
-
 import os
 import pathlib
+import app.pages.utils.system_operation_prerun as helper
 
 import pandas as pd
 import pypsa
@@ -22,101 +20,101 @@ from holoviews import Store
 import networkx as nx
 import hvplot.networkx as hvnx
 from shapely.geometry import Point, LineString, shape
+import streamlit as st
+
 st.set_page_config(
     layout="wide"
 )
 
+gen_df=helper.get_gen_t_dict()
+lines_df=helper.get_lines_t_dict()
+storage_df=helper.get_storage_t_dict()
+links_df=helper.get_links_t_dict()
 
-data=helper.make_return_dict()
+
+kwargs = dict(
+        stacked=True,
+        line_width=0,
+        xlabel='',
+        width=800,
+        height=550,
+        hover=False,
+        legend='top'
+    )
+
 st.title("System operation")
 
-st.write("System operation plots will be added here.")
 
-
-
-
+#####################generators#####################
+st.write("Generators plot is here.")
 _, main_col, _ = st.columns([1,90,1])
 
 with main_col:
     selected_network = st.selectbox(
         "Select which scenario's plot you want to see :",
-        list(data.keys()),
+        list(gen_df.keys()),
     )
 
-country_data=data.get(selected_network)
+country_data=gen_df.get(selected_network)
 
-_, col1, col2, col3, _ = st.columns([1,30,30,30,1])
+_, gen_param_col, _ = st.columns([1,40,1])
 
-graph_opts = dict(
-        xaxis=None,
-        yaxis=None,
-        active_tools=['pan', 'wheel_zoom']
+with gen_param_col:
+    selected_gen = st.selectbox(
+        "Select which generator's plot you want to see :",
+        list(country_data.keys()),
     )
 
-gen_unique_names=country_data["gen_unique_names"]
-gen_parameters=country_data["gen_parameters"]
-map_points_parameters=[]
-for i in gen_unique_names:
-    for j in gen_parameters:
-        map_points_parameters.append(i+"$"+j)
+gen_area_plot=country_data[selected_gen].hvplot.area(**kwargs)
+s=hv.render(gen_area_plot,backend='bokeh')
+st.bokeh_chart(s, use_container_width=True)
 
-polygon_gpd=country_data["polygon_gpd"]
-points_gpd=country_data["nodes_gpd"]
-map_points_df=country_data["nodes_polygon_df"]
+#####################lines#####################
 
+st.write("Lines plot is here.")
+_, lines_param_col, _ = st.columns([1,40,1])
 
+lines_country_data=lines_df.get(selected_network)
 
-with col1:
-    colorpeth_param = st.selectbox(
-            "Regions", map_points_parameters,    
-        )
+with lines_param_col:
+    selected_line = st.selectbox(
+        "Select which line's plot you want to see :",
+        list(lines_country_data.keys()),
+    )
 
-    if(colorpeth_param not in polygon_gpd.columns):
-        selecter_col_data=map_points_df.loc[
-        (colorpeth_param.split("$")[0]
-        ,colorpeth_param.split("$")[1])].values.tolist()
-        polygon_gpd.insert(loc=0,column=colorpeth_param,value=selecter_col_data)
-    
-    plot_area=polygon_gpd.hvplot(
-    geo=True,
-     tiles='OSM', alpha=1, 
-            hover_cols=['name'],
-            width=800, height=600,c=colorpeth_param).opts(**graph_opts)
-    
-    
+lines_area_plot=lines_country_data[selected_line].hvplot.area(**kwargs)
+s=hv.render(lines_area_plot,backend='bokeh')
+st.bokeh_chart(s, use_container_width=True)
 
-with col3:
-    points_param = st.selectbox(
-            "Nodes", map_points_parameters,
-           
-        )
-    if(points_param not in points_gpd.columns):
-        selecter_col_data=map_points_df.loc[
-        (points_param.split("$")[0]
-        ,points_param.split("$")[1])].values.tolist()
-        points_gpd.insert(loc=0,column=points_param,value=selecter_col_data)
+##################### storage #####################
+st.write("Storage plot is here.")
+_, storage_param_col, _ = st.columns([1,40,1])
 
-    plot_ponts = points_gpd.hvplot(
-            geo=True,
-            hovercols=["name"],
-            size=400,
-            # s = 300,
-            c=points_param,
-            alpha=0.7
-        ).opts(**graph_opts)
+storage_country_data=storage_df.get(selected_network)
 
-with col2:
-    line_option = st.selectbox(
-            "Network", country_data["line_parameters"]
-            
-        )
-    G=country_data["lines_edge_netwok"]
-    pos=country_data["lines_edge_pos_dict"]
-    scale = pd.Series(nx.get_edge_attributes(G,line_option )).max() / 10
-    
-    network_lines_plot=hvnx.draw_networkx_edges(G, pos=pos,edge_color=line_option,responsive=True,
-            inspection_policy="edges",node_color='#A0C0E2',geo=True,edge_width=hv.dim(line_option)/scale ).opts(**graph_opts)
+with storage_param_col:
+    selected_storage = st.selectbox(
+        "Select which storage's plot you want to see :",
+        list(storage_country_data.keys()),
+    )
 
+storage_area_plot=storage_country_data[selected_storage].hvplot.area(**kwargs)
+s=hv.render(storage_area_plot,backend='bokeh')
+st.bokeh_chart(s, use_container_width=True)
 
+##################### links #####################
 
-st.bokeh_chart(hv.render(plot_area*plot_ponts*network_lines_plot, backend='bokeh'), use_container_width=True)
+st.write("Links plot is here.")
+_, links_param_col, _ = st.columns([1,40,1])
+
+links_country_data=links_df.get(selected_network)
+
+with links_param_col:
+    selected_link = st.selectbox(
+        "Select which link's plot you want to see :",
+        list(links_country_data.keys()),
+    )
+
+links_area_plot=links_country_data[selected_link].hvplot.area(**kwargs)
+s=hv.render(links_area_plot,backend='bokeh')
+st.bokeh_chart(s, use_container_width=True)

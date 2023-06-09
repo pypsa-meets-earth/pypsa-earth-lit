@@ -1,86 +1,122 @@
 import streamlit as st
-import app.pages.utils.spatial_configuration_helper as helper
-import app.pages.utils.tools as tools
+import app.pages.utils.spatial_pre_run as helper
+
+import os
+import pathlib
+
+import pandas as pd
+import pypsa
+import numpy as np
 import plotly.express as px
+import xarray as xr
+import geopandas as gpd
 import plotly.graph_objects as go
+import shapely.geometry
+import math
+import yaml
+import hvplot.pandas
+import holoviews as hv
+from bokeh.models import HoverTool  
+from bokeh.plotting import figure, show
+from holoviews import Store
+import networkx as nx
+import hvplot.networkx as hvnx
+from shapely.geometry import Point, LineString, shape
+st.set_page_config(
+    layout="wide"
+)
 
 
-def main():
-    network_map = tools.get_network_map("pypsa-earth")
+data=helper.make_return_dict()
+st.title("System operation")
 
-    name_network_map = {}
+st.write("System operation plots will be added here.")
 
-    for name, file_name in network_map.keys():
-        name_network_map[name] = network_map[(name, file_name)]
 
-    st.title("Spatial configuration")
 
+
+_, main_col, _ = st.columns([1,90,1])
+
+with main_col:
     selected_network = st.selectbox(
-        "Select your metric",
-        list(name_network_map.keys()),
+        "Select which scenario's plot you want to see :",
+        list(data.keys()),
     )
 
-    n = name_network_map[selected_network]
+country_data=data.get(selected_network)
 
-    options = st.multiselect(
-        "select features", ["lines", "generators"], default=["generators"]
+_, col1, col2, col3, _ = st.columns([1,30,30,30,1])
+
+graph_opts = dict(
+        xaxis=None,
+        yaxis=None,
+        active_tools=['pan', 'wheel_zoom']
     )
 
-    line_parameter = st.selectbox(
-        "Select your metric",
-        [
-            "Total Capacity (GW)",
-            # "Reinforcement (GW)",
-            "Original Capacity (GW)",
-            "Maximum Capacity (GW)",
-            # "Technology",
-            "Length (km)",
-        ],
-    )
+gen_unique_names=country_data["gen_unique_names"]
+gen_parameters=country_data["gen_parameters"]
+map_points_parameters=[]
+for i in gen_unique_names:
+    for j in gen_parameters:
+        map_points_parameters.append(i+"$"+j)
 
-    df = helper.get_sctter_points(n)
-
-    line_df = helper.get_lines(n)
-
-    fig = px.scatter_mapbox(
-        df,
-        lat="y",
-        lon="x",
-        hover_name="name",
-        size="size",
-        color="size",
-        opacity=1 if options.__contains__("generators") else 0,
-    )
-
-    if options.__contains__("lines"):
-        for i in range(len(line_df)):
-            s_nom = line_df["Length (km)"][i]
-            line_size_factor = 1000
-            if line_parameter == "Length (km)":
-                line_size_factor = 100
-            if line_parameter == "Total Capacity (GW)":
-                line_size_factor = 800
-            fig.add_trace(
-                go.Scattermapbox(
-                    lon=[line_df["source_x"][i], line_df["destination_x"][i]],
-                    lat=[line_df["source_y"][i], line_df["destination_y"][i]],
-                    mode="lines",
-                    line=dict(width=line_df[line_parameter][i] / line_size_factor),
-                    hovertemplate=f"s_nom: {s_nom:.2f},   name: {line_df['index'][i]}",
-                    hovertext=line_df["Length (km)"][i],
-                    name=line_df["index"][i],
-                    hoverinfo="all",
-                    showlegend=False,
-                )
-            )
-
-    fig.update_layout(
-        mapbox_style="carto-positron",
-        mapbox_zoom=4.5,
-        mapbox_center={"lat": sum(df["y"]) / len(df), "lon": sum(df["x"]) / len(df)},
-    )
-
-    st.plotly_chart(fig, use_container_width=False, theme="streamlit")
+polygon_gpd=country_data["polygon_gpd"]
+points_gpd=country_data["nodes_gpd"]
+map_points_df=country_data["nodes_polygon_df"]
 
 
-main()
+
+with col1:
+    colorpeth_param = st.selectbox(
+            "Regions", map_points_parameters,    
+        )
+
+    if(colorpeth_param not in polygon_gpd.columns):
+        selecter_col_data=map_points_df.loc[
+        (colorpeth_param.split("$")[0]
+        ,colorpeth_param.split("$")[1])].values.tolist()
+        polygon_gpd.insert(loc=0,column=colorpeth_param,value=selecter_col_data)
+    
+    plot_area=polygon_gpd.hvplot(
+    geo=True,
+     tiles='OSM', alpha=1, 
+            hover_cols=['name'],
+            width=800, height=600,c=colorpeth_param).opts(**graph_opts)
+    
+    
+
+with col3:
+    points_param = st.selectbox(
+            "Nodes", map_points_parameters,
+           
+        )
+    if(points_param not in points_gpd.columns):
+        selecter_col_data=map_points_df.loc[
+        (points_param.split("$")[0]
+        ,points_param.split("$")[1])].values.tolist()
+        points_gpd.insert(loc=0,column=points_param,value=selecter_col_data)
+
+    plot_ponts = points_gpd.hvplot(
+            geo=True,
+            hovercols=["name"],
+            size=400,
+            # s = 300,
+            c=points_param,
+            alpha=0.7
+        ).opts(**graph_opts)
+
+with col2:
+    line_option = st.selectbox(
+            "Network", country_data["line_parameters"]
+            
+        )
+    G=country_data["lines_edge_netwok"]
+    pos=country_data["lines_edge_pos_dict"]
+    scale = pd.Series(nx.get_edge_attributes(G,line_option )).max() / 10
+    
+    network_lines_plot=hvnx.draw_networkx_edges(G, pos=pos,edge_color=line_option,responsive=True,
+            inspection_policy="edges",node_color='#A0C0E2',geo=True,edge_width=hv.dim(line_option)/scale ).opts(**graph_opts)
+
+
+
+st.bokeh_chart(hv.render(plot_area*plot_ponts*network_lines_plot, backend='bokeh'), use_container_width=True)
