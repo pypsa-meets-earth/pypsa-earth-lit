@@ -21,27 +21,12 @@ import networkx as nx
 import hvplot.networkx as hvnx
 from shapely.geometry import Point, LineString, shape
 import streamlit as st
+import app.pages.utils.tools as tools
 import typing
 
 
 Store.add_style_opts(hv.Bars, ['level'], backend='bokeh')
 
-@st.cache_resource
-def get_network_map(pypsa_earth_path):
-    RESULTS_DIR = pathlib.Path(pypsa_earth_path, "results")
-    networks = {}
-    for dir in os.listdir(RESULTS_DIR):
-        entry = pathlib.Path(RESULTS_DIR, dir)
-        if not entry.is_dir():
-            continue
-
-        for dir_child in os.listdir(pathlib.Path(entry, "networks")):
-            if not dir_child.endswith(".nc"):
-                continue
-            networks[dir] = pypsa.Network(
-                pathlib.Path(entry, "networks", dir_child)
-            )
-    return networks
 
 ###### for generators #####################
 
@@ -73,7 +58,7 @@ non_empth_df_gen_t=["p","p_max_pu"]
 def get_gen_t_dict():
 
     result={}
-    pypsa_network_map=get_network_map("pypsa-earth")
+    pypsa_network_map=tools.get_network_map("pypsa-earth")
 
     for network_key in pypsa_network_map.keys():
         network_dict={}
@@ -93,7 +78,7 @@ non_empty_df_lines_t=["p0","mu_upper","mu_lower"]
 def get_lines_t_dict():
 
     result={}
-    pypsa_network_map=get_network_map("pypsa-earth")
+    pypsa_network_map=tools.get_network_map("pypsa-earth")
 
     for network_key in pypsa_network_map.keys():
         network_dict={}
@@ -113,7 +98,7 @@ non_empty_storage_keys=["inflow","p","state_of_charge","spill"]
 def get_storage_t_dict():
     
     result={}
-    pypsa_network_map=get_network_map("pypsa-earth")
+    pypsa_network_map=tools.get_network_map("pypsa-earth")
 
     for network_key in pypsa_network_map.keys():
         network_dict={}
@@ -148,7 +133,7 @@ non_empth_links_keys=["p0","mu_upper","mu_lower"]
 @st.cache_resource
 def get_links_t_dict():
     result={}
-    pypsa_network_map=get_network_map("pypsa-earth")
+    pypsa_network_map=tools.get_network_map("pypsa-earth")
 
     for network_key in pypsa_network_map.keys():
         network_dict={}

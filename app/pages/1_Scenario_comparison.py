@@ -2,6 +2,9 @@ import streamlit as st
 import app.pages.utils.tools as tools
 import pathlib
 import plotly.express as px
+st.set_page_config(
+    layout="wide"
+)
 
 
 def main():

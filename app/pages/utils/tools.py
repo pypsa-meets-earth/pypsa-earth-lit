@@ -17,11 +17,12 @@ def get_network_map(pypsa_earth_path):
         for dir_child in os.listdir(pathlib.Path(entry, "networks")):
             if not dir_child.endswith(".nc"):
                 continue
-            networks[(dir, dir_child)] = pypsa.Network(
+            networks[dir] = pypsa.Network(
                 pathlib.Path(entry, "networks", dir_child)
             )
     print(networks)
     return networks
+
 
 
 def get_df_for_parameter(network_map, parameter, get_values_fn, get_cols_fn):

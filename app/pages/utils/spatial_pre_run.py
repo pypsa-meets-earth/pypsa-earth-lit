@@ -6,25 +6,10 @@ import pypsa
 import geopandas as gpd
 import numpy as np
 import networkx as nx
+import app.pages.utils.tools as tools
 
 
 
-@st.cache_resource
-def get_network_map(pypsa_earth_path):
-    RESULTS_DIR = pathlib.Path(pypsa_earth_path, "results")
-    networks = {}
-    for dir in os.listdir(RESULTS_DIR):
-        entry = pathlib.Path(RESULTS_DIR, dir)
-        if not entry.is_dir():
-            continue
-
-        for dir_child in os.listdir(pathlib.Path(entry, "networks")):
-            if not dir_child.endswith(".nc"):
-                continue
-            networks[dir] = pypsa.Network(
-                pathlib.Path(entry, "networks", dir_child)
-            )
-    return networks
 
 @st.cache_resource
 def get_onshore_regions(pypsa_earth_path):
@@ -131,7 +116,7 @@ def make_dict_senario(pypsa_network,polygon_gpd):
 def make_return_dict():
     return_dict = {}
 
-    pypsa_networks=get_network_map("pypsa-earth")
+    pypsa_networks=tools.get_network_map("pypsa-earth")
     bus_region_gpd=get_onshore_regions("pypsa-earth")
     for k in pypsa_networks.keys():
         
