@@ -7,6 +7,7 @@
 *.log
 *.pbf
 *.zip
+*ipynb
 
 # Untrack some Jupyter changes
 .ipynb_checkpoints
@@ -14,3 +15,10 @@ notebooks/
 
 # Untrack folders
 data/
+pypsa-earth/
+.venv/
+
+# 
+settings.json
+```
+pypsa_dashboard.egg-info
