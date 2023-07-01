@@ -245,8 +245,6 @@ preferred_order:
   - CO2 sequestration
   - CCS
 
-
-
 operation:
   carrier:
     total-electricity: Total Electricity
@@ -284,21 +282,30 @@ ylim:
   energy: [-15000, 15000]
   co2: [-600, 600]
 
-gen_spatial_parameters:
-  p_nom: 
+scenario_names:
+  NG: Nigeria
+  NG_no_oil: Nigeria without oil
+  MA: Morocco
+
+########## spatial parameters
+
+spatial_parameters:
+  p_nom:
     nice_name: Nominal Power
     unit: (MW)
-  marginal_cost: 
+  marginal_cost:
     nice_name: Cost During Production
     unit: (euro/MWh)
   capital_cost:
     nice_name: Cost Of Expanding Generation
     unit: (euro/MW)
-# pnom_min==p_nom
-# [p_nom_max = expansion constraint, The maximal available power output /1e3 to GW
-# p_nom_min = m the minimum expansion acquired from stats. For example, 110% of <years>’s capacities is obtained with p_nom_min: 1.1.
-# marginal_cost = currency/MWH marginal cost of production of 1 MWh
-# capital_cost = currency/MW cost of expanding nominal power by 1 MW
+
+network_parameters:
+  total_capacity: Total Capacity (GW)
+  reinforcement: Reinforcement (GW)
+  original_capacity: Original Capacity (GW)
+  max_capacity: Maximum Capacity (GW)
+  length: Line Length (km)
 
 carrier:
   CCGT: Combined-Cycle Gas
@@ -308,7 +315,7 @@ carrier:
   coal: Coal
   oil: Oil
   solar: Solar
-  OCGT:  Open-Cycle Gas
+  OCGT: Open-Cycle Gas
   nuclear: Nuclear
   onwind: Onshore Wind
   offwind-dc: Offshore Wind (DC)
@@ -319,8 +326,6 @@ carrier:
   H2: Hydrogen Storage
   battery: Battery Storage
   load: Load
-
-
 
 # https://holoviews.org/user_guide/Colormaps.html
 # you can also pick you own colors
@@ -343,29 +348,20 @@ carrier_colors:
   H2: Reds
   battery: Reds
 
-scenario_names:
-  NG: Nigeria
-  NG_no_oil: Nigeria without oil
-  MA: Morocco
+######### system operation parameters
 
 gen_t_parameter:
-  p: 
+  p:
     nice_name: Active Power At Bus
     unit: (MW)
     legend_title: Carriers
-  p_max_pu: 
+  p_max_pu:
     nice_name: Maximum Output Possible Per Unit Nominal Power
     unit: (MW)
     legend_title: Carriers
 
-lines_t_parameter:
-  p0: 
-    nice_name: Active Power Flow
-    unit: (MW)
-    legend_title: Line Numbers
-
 storage_t_parameter:
-  p: 
+  p:
     nice_name: Active Power
     unit: (MW)
     legend_title: Region Number and Storage Type
@@ -381,13 +377,13 @@ storage_t_parameter:
     nice_name: State Of Charge
     unit: (MWh)
     legend_title: Region Number and Storage Type
-  
+
 links_t_parameter:
-  p0: 
+  p0:
     nice_name: Active Power Flow
     unit: (MW)
     legend_title: Not Sure
-  mu_upper: 
+  mu_upper:
     nice_name: Shadow Price Of Maximum Nominal Power
     unit: (euro/MW)
     legend_title: Not Sure
@@ -395,4 +391,20 @@ links_t_parameter:
     nice_name: Shadow Price Of Minimum Nominal Power
     unit: (euro/MW)
     legend_title: Not Sure
-  
+
+########### SCENARIO COMPARISION parameters
+
+statistics_param_units:
+  Capacity Factor: cf unit
+  Capital Expenditure: ce unit
+  Curtailment: oiho
+  Installed Capacity: ohb
+  Operational Expenditure: teerthg
+  Optimal Capacity: ughhui
+  Revenue: iugiuhg
+  Supply: ytd
+  Withdrawal: jhoijh
+
+second_param_units:
+  CO2 emissions: co2 units
+  optimal generator capacity: gen units

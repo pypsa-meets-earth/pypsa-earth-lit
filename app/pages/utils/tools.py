@@ -5,7 +5,7 @@ import pandas as pd
 import pypsa
 import yaml
 
-@st.cache_resource
+# @st.cache_resource
 def return_color_from_yaml(config_file):
     with open(config_file, "r") as f:
        config = yaml.safe_load(f)

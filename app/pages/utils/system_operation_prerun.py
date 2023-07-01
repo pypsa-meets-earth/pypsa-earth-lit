@@ -39,8 +39,6 @@ def get_unique_carriers(df):
     return list(set(split_cols))
 
 
-
-
 def get_gen_t_df(pypsa_network,gen_t_key):
     gen_t_df=pypsa_network.generators_t[gen_t_key]
     unique_carriers=get_unique_carriers(gen_t_df)
@@ -58,7 +56,7 @@ def get_gen_t_df(pypsa_network,gen_t_key):
 
 non_empth_df_gen_t=[param for param in config["gen_t_parameter"]]
 
-@st.cache_resource
+# @st.cache_resource
 def get_gen_t_dict():
 
     result={}
@@ -74,25 +72,6 @@ def get_gen_t_dict():
     
     return result
 
-
-########## for lines #####################
-
-non_empty_df_lines_t=[param for param in config["lines_t_parameter"]]
-
-@st.cache_resource
-def get_lines_t_dict():
-
-    result={}
-    pypsa_network_map=tools.get_network_map("pypsa-earth")
-
-    for network_key in pypsa_network_map.keys():
-        network_dict={}
-        network = pypsa_network_map.get(network_key)
-        for non_empty_key in non_empty_df_lines_t:
-            network_dict[non_empty_key]=network.lines_t[non_empty_key]
-        
-        result[network_key]=network_dict
-    return result
 
 
 ############# for storage #####################
@@ -112,7 +91,7 @@ def rename_final_df(df):
     return df
 
 
-@st.cache_resource
+# @st.cache_resource
 def get_storage_t_dict():
     
     result={}
@@ -151,7 +130,7 @@ def get_links_df(pypsa_network,links_t_key):
 non_empth_links_keys=[param for param in config["links_t_parameter"]]
 
 
-@st.cache_resource
+# @st.cache_resource
 def get_links_t_dict():
     result={}
     pypsa_network_map=tools.get_network_map("pypsa-earth")
