@@ -13,8 +13,8 @@ import yaml
 config=tools.config
 
 @st.cache_resource
-def get_onshore_regions(pypsa_earth_path):
-    RESULTS_DIR=os.path.join(pypsa_earth_path,"resources")
+def get_onshore_regions():
+    RESULTS_DIR=os.path.join("../pypsa-earth","resources")
     name_geo_dict = {}
     for dir in os.listdir(RESULTS_DIR):
         entry = pathlib.Path(RESULTS_DIR, dir)
@@ -79,6 +79,7 @@ def _make_plot_lines_df(pypsa_network):
 
 def get_spatial_values_df(pypsa_network,gpd_bus_regions):
     # this df is a multiindex df with carrier and parameter as index and bus regions as columns
+    # add new row with index (carrier,parameter) and values as list of values for each bus region (in order)
     # what ever parameters are added to indexes in this df should be added to config "spatial_parameters" along with nice names
     base_df=_get_gen_df(pypsa_network,gpd_bus_regions)
 
@@ -89,6 +90,7 @@ def get_edges_df(pypsa_network):
     #  making base df for edges with lines 
     #  add other columns with data should be defined in config "network_parameters" along with nice names
     base_df=_make_plot_lines_df(pypsa_network)
+
 
     return base_df
 
@@ -138,8 +140,8 @@ def make_dict_senario(pypsa_network,polygon_gpd):
 def make_return_dict():
     return_dict = {}
 
-    pypsa_networks=tools.get_network_map("pypsa-earth")
-    bus_region_gpd=get_onshore_regions("pypsa-earth")
+    pypsa_networks=tools.get_network_map()
+    bus_region_gpd=get_onshore_regions()
     for k in pypsa_networks.keys():
         
         return_dict[k]=make_dict_senario(pypsa_networks.get(k),bus_region_gpd.get(k))

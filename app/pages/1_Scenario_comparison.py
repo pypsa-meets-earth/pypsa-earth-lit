@@ -14,7 +14,7 @@ def get_stat_unit(param):
 def main():
     st.title("Scenario comparison")
 
-    network_map = tools.get_network_map("pypsa-earth")
+    network_map = tools.get_network_map()
 
     ###### first dropdown plotting n.statistics #####
     params = list(network_map.values())[0].statistics().columns

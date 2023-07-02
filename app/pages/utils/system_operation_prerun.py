@@ -27,6 +27,7 @@ import typing
 
 
 config=tools.config
+pypsa_network_map=tools.get_network_map()
 
 ###### for generators #####################
 
@@ -60,7 +61,7 @@ non_empth_df_gen_t=[param for param in config["gen_t_parameter"]]
 def get_gen_t_dict():
 
     result={}
-    pypsa_network_map=tools.get_network_map("pypsa-earth")
+    
 
     for network_key in pypsa_network_map.keys():
         network_dict={}
@@ -95,7 +96,6 @@ def rename_final_df(df):
 def get_storage_t_dict():
     
     result={}
-    pypsa_network_map=tools.get_network_map("pypsa-earth")
 
     for network_key in pypsa_network_map.keys():
         network_dict={}
@@ -133,7 +133,6 @@ non_empth_links_keys=[param for param in config["links_t_parameter"]]
 # @st.cache_resource
 def get_links_t_dict():
     result={}
-    pypsa_network_map=tools.get_network_map("pypsa-earth")
 
     for network_key in pypsa_network_map.keys():
         network_dict={}

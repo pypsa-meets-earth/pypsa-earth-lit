@@ -15,8 +15,8 @@ config=return_color_from_yaml("app/pages/utils/config.yaml")
 
 
 @st.cache_resource
-def get_network_map(pypsa_earth_path):
-    RESULTS_DIR = pathlib.Path(pypsa_earth_path, "results")
+def get_network_map():
+    RESULTS_DIR = pathlib.Path("../pypsa-earth", "results")
     networks = {}
     for dir in os.listdir(RESULTS_DIR):
         entry = pathlib.Path(RESULTS_DIR, dir)
