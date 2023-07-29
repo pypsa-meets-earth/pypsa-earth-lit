@@ -1,7 +1,0 @@
-name: pypsa-earth-lit-pip
-channels:
-  - bioconda
-  - pyviz
-  - gurobi
-  - conda-forge
-  - defaults
