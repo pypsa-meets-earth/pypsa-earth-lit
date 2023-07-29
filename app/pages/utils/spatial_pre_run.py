@@ -13,8 +13,8 @@ import yaml
 config=tools.config
 
 @st.cache_resource
-def get_onshore_regions(pypsa_earth_path):
-    RESULTS_DIR=os.path.join(pypsa_earth_path,"resources")
+def get_onshore_regions():
+    RESULTS_DIR=os.path.join("../pypsa-earth","resources")
     name_geo_dict = {}
     for dir in os.listdir(RESULTS_DIR):
         entry = pathlib.Path(RESULTS_DIR, dir)
@@ -33,7 +33,7 @@ def get_onshore_regions(pypsa_earth_path):
     return name_geo_dict
 
 
-def get_gen_unique_names(network):
+def _get_gen_unique_names(network):
     gen_all_names=list(network.generators.index)
     for i in range(len(gen_all_names)):
         gen_all_names[i]=gen_all_names[i].split(" ")[2]
@@ -42,11 +42,11 @@ def get_gen_unique_names(network):
     gen_unique_names.remove("load")
     return gen_unique_names
 
-selected_cols = [param for param in config["gen_spatial_parameters"]]
+slected_cols_gen = ["p_nom","marginal_cost","capital_cost"]
 
-
-def get_spatial_values_df(gen_unique_names,selected_cols,network,gpd_bus_regions):
-    multi_index= pd.MultiIndex.from_product([gen_unique_names, selected_cols],
+def _get_gen_df(network,gpd_bus_regions):
+    gen_unique_names=_get_gen_unique_names(network)
+    multi_index= pd.MultiIndex.from_product([gen_unique_names, slected_cols_gen],
     names=['carrier','parameter'])
     param_bus_value_df = pd.DataFrame( index=multi_index,columns=gpd_bus_regions.name)
 
@@ -59,67 +59,93 @@ def get_spatial_values_df(gen_unique_names,selected_cols,network,gpd_bus_regions
         # merging both to get all params df
         merged_gen_df=carrier_df.merge(temp_name_series, left_on="bus", right_on="name", how="right")
         # putting it in the param_bus_value_df 
-        for param in selected_cols:
+        for param in slected_cols_gen:
             param_bus_value_df.loc[(carrier_in_unique, param)]=list(merged_gen_df[param])
 
     param_bus_value_df.replace([np.inf, -np.inf,np.nan], 0, inplace=True)
     return param_bus_value_df
 
+def _make_plot_lines_df(pypsa_network):
+    nLines=pypsa_network.lines.copy()
+    nLines["total_capacity"] = nLines.s_nom_opt.clip(lower=1e-3)
+    nLines["reinforcement"] = nLines.s_nom.clip(lower=1e-3)- nLines.s_nom_opt.clip(lower=1e-3)
+    nLines["original_capacity"] = nLines.s_nom.clip(lower=1e-3)
+    nLines["max_capacity"] = nLines.s_nom_min.clip(lower=1e-3)
 
+    return nLines
+
+
+##### add data to these df and define them in config #####
+
+def get_spatial_values_df(pypsa_network,gpd_bus_regions):
+    # this df is a multiindex df with carrier and parameter as index and bus regions as columns
+    # add new row with index (carrier,parameter) and values as list of values for each bus region (in order)
+    # what ever parameters are added to indexes in this df should be added to config "spatial_parameters" along with nice names
+    base_df=_get_gen_df(pypsa_network,gpd_bus_regions)
+
+    return base_df
+
+
+def get_edges_df(pypsa_network):
+    #  making base df for edges with lines 
+    #  add other columns with data should be defined in config "network_parameters" along with nice names
+    base_df=_make_plot_lines_df(pypsa_network)
+
+
+    return base_df
+
+
+# this function gives us the complete data in form of a dict
 def make_dict_senario(pypsa_network,polygon_gpd):
     return_dict = {}
 
     ######### DATA FOR POINTS AND CHOLORPETH MAP #########
+
     return_dict["polygon_gpd"]=polygon_gpd
 
-    # converting polygon geometry with just x and y
+    # converting polygon geometry to points
     x=list(polygon_gpd["x"].values)
     y=list(polygon_gpd["y"].values)
     points = polygon_gpd.copy()
     points.geometry = gpd.points_from_xy(x, y, crs=4326)
+
     return_dict["nodes_gpd"]=points
 
-    # add values to nodes_polygon_df
-    return_dict["nodes_polygon_df"]=get_spatial_values_df(get_gen_unique_names(pypsa_network),selected_cols,pypsa_network,polygon_gpd)
+    # base df with all values for all parameters
+    return_dict["nodes_polygon_df"]=get_spatial_values_df(pypsa_network,polygon_gpd)
 
-    ######### DATA FOR LINES  #########
-
-    # adding values to n.lines copy
-    nLines=pypsa_network.lines.copy()
-    nLines["Total Capacity (GW)"] = nLines.s_nom_opt.clip(lower=1e-3)
-    nLines["Reinforcement (GW)"] = nLines.s_nom.clip(lower=1e-3)- nLines.s_nom_opt.clip(lower=1e-3)
-    nLines["Original Capacity (GW)"] = nLines.s_nom.clip(lower=1e-3)
-    nLines["Maximum Capacity (GW)"] = nLines.s_nom_min.clip(lower=1e-3)
-    nLines["Line Length (km)"] = nLines.length
     
-    return_dict["lines_df"]=nLines
+    ######### DATA FOR LINES  #########
+    
+    # getting df for edges and attributes from config
+    edges_df=get_edges_df(pypsa_network)
+
+    edges=list(config["network_parameters"].keys())
 
     # making network object in networkx
-    edges= ["Total Capacity (GW)", "Reinforcement (GW)", "Original Capacity (GW)", "Maximum Capacity (GW)","Line Length (km)"]
-    G = nx.from_pandas_edgelist(nLines, 'bus0', 'bus1',edge_attr=edges) # type: ignore
-    return_dict["lines_edge_netwok"]=G
+    G = nx.from_pandas_edgelist(edges_df, 'bus0', 'bus1',edge_attr=edges) # type: ignore
 
-    
+    return_dict["edge_netwok"]=G
+
+    # addition dict with position of edge nodes reqired for plotting
     nodes_pos_dict={}
     for point in polygon_gpd.itertuples():
         nodes_pos_dict[point.name]=(point.x,point.y)
-    return_dict["lines_edge_pos_dict"]=nodes_pos_dict
 
-    ######### PARAMETERS  #########
-
-    return_dict["gen_unique_names"]=get_gen_unique_names(pypsa_network)
-    return_dict["line_parameters"]=edges
+    return_dict["edge_pos_dict"]=nodes_pos_dict
 
     return return_dict
 
-@st.cache_resource
+
+# making return dict for every scenario and complete data to plot that scenario
+# @st.cache_resource
 def make_return_dict():
     return_dict = {}
 
-    pypsa_networks=tools.get_network_map("pypsa-earth")
-    bus_region_gpd=get_onshore_regions("pypsa-earth")
+    pypsa_networks=tools.get_network_map()
+    bus_region_gpd=get_onshore_regions()
     for k in pypsa_networks.keys():
-        
+          
         return_dict[k]=make_dict_senario(pypsa_networks.get(k),bus_region_gpd.get(k))
 
     return return_dict

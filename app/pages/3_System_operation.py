@@ -29,7 +29,6 @@ import datetime
 
 
 gen_df=helper.get_gen_t_dict()
-lines_df=helper.get_lines_t_dict()
 storage_df=helper.get_storage_t_dict()
 links_df=helper.get_links_t_dict()
 
@@ -62,7 +61,7 @@ with main_col:
 country_data=gen_df.get(selected_network)
 
 
-#####################generators#####################
+##################### generators #####################
 st.subheader("Generators plot is here.")
 
 def gen_formatter(gen):
@@ -110,35 +109,34 @@ s=hv.render(gen_area_plot,backend='bokeh')
 with gen_plot_col:
     st.bokeh_chart(s, use_container_width=True)
 
-#####################lines#####################
 
-st.subheader("Lines plot is here.")
+##################### links #####################
 
+st.subheader("Links plot is here.")
+_, links_param_col,_,res_param_col,_,date_range_param, _ = st.columns([1,20,1,20,1,50,1])
+_, links_plot_col, _ = st.columns([1,80,1])
 
-_, lines_param_col,_,res_param_col,_,date_range_param, _ = st.columns([1,20,1,20,1,50,1])
-_, lines_plot_col, _ = st.columns([1,80,1])
+links_country_data=links_df.get(selected_network)
 
-lines_country_data=lines_df.get(selected_network)
+def links_formatter(link):
+    return helper.config["links_t_parameter"][link]["nice_name"] + " "+helper.config["links_t_parameter"][link]["unit"]
 
-def line_formatter(line):
-    return helper.config["lines_t_parameter"][line]["nice_name"] + " "+helper.config["lines_t_parameter"][line]["unit"]
-
-with lines_param_col:
-    selected_line = st.selectbox(
-        "options",
-        list(lines_country_data.keys()),
-        format_func=line_formatter
+with links_param_col:
+    selected_link = st.selectbox(
+        "Select which link's plot you want to see :",
+        list(links_country_data.keys()),
+        format_func=links_formatter
     )
 
-lines_df=lines_country_data[selected_line]
+links_df=links_country_data[selected_link]
 
 with res_param_col:
     choices = res_choices
-    res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x],key="lines_res")
+    res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x], key="links_res")
 
 with date_range_param:
-    min_index=lines_df.index[0]
-    max_index=lines_df.index[-1]
+    min_index=links_df.index[0]
+    max_index=links_df.index[-1]
     min_value = datetime.datetime(min_index.year, min_index.month, min_index.day,max_index.hour,max_index.minute)
     max_value = datetime.datetime(max_index.year, max_index.month, max_index.day,max_index.hour,max_index.minute)
     values = st.slider(
@@ -147,17 +145,33 @@ with date_range_param:
             # step=datetime.timedelta(hours=int(res[:-1])),
             format="D MMM, HH:mm",
             label_visibility='hidden',
-            key="lines_date"
+            key="links_date"
         )
 
-lines_df=lines_df.loc[values[0]:values[1]].resample(res).mean()
+links_df=links_df.loc[values[0]:values[1]].resample(res).mean()
 
-with lines_plot_col:
-    lines_area_plot=lines_df.hvplot.area(**kwargs,ylabel=helper.config["lines_t_parameter"][selected_line]["unit"],group_label=helper.config["lines_t_parameter"][selected_line]["legend_title"])
-    s=hv.render(lines_area_plot,backend='bokeh')
+with links_plot_col:
+    supply_df=pd.DataFrame(index=links_df.index)
+    demand_df=pd.DataFrame(index=links_df.index)
+    supply_df["battery charger"]=links_df["battery charger"]
+    supply_df["H2 Electrolysis"]=links_df["H2 Electrolysis"]
+    demand_df["battery discharger"]=links_df["battery discharger"]
+    demand_df["Fuel Cell"]=links_df["Fuel Cell"]
+    supply_area_plot=supply_df.hvplot.area(**kwargs,ylabel=helper.config["links_t_parameter"][selected_link]["unit"],
+    group_label=helper.config["links_t_parameter"][selected_link]["legend_title"])
+    demand_area_plot=demand_df.hvplot.area(**kwargs,ylabel=helper.config["links_t_parameter"][selected_link]["unit"],
+    group_label=helper.config["links_t_parameter"][selected_link]["legend_title"])  
+    s=hv.render(supply_area_plot,backend='bokeh')
+    s2=hv.render(demand_area_plot,backend='bokeh')
+    st.subheader("Supply")
     st.bokeh_chart(s, use_container_width=True)
+    st.subheader("Consumption")
+    st.bokeh_chart(s2, use_container_width=True)
+
+
 
 ##################### storage #####################
+
 st.subheader("Storage plot is here.")
 
 _, storage_param_col,_,res_param_col,_,date_range_param, _ = st.columns([1,20,1,20,1,50,1])
@@ -202,50 +216,4 @@ with storage_plot_col:
     ylabel=helper.config["storage_t_parameter"][selected_storage]["unit"],
     group_label=helper.config["storage_t_parameter"][selected_storage]["legend_title"])
     s=hv.render(storage_area_plot,backend='bokeh')
-    st.bokeh_chart(s, use_container_width=True)
-
-##################### links #####################
-
-st.subheader("Links plot is here.")
-_, links_param_col,_,res_param_col,_,date_range_param, _ = st.columns([1,20,1,20,1,50,1])
-_, links_plot_col, _ = st.columns([1,80,1])
-
-links_country_data=links_df.get(selected_network)
-
-def links_formatter(link):
-    return helper.config["links_t_parameter"][link]["nice_name"] + " "+helper.config["links_t_parameter"][link]["unit"]
-
-with links_param_col:
-    selected_link = st.selectbox(
-        "Select which link's plot you want to see :",
-        list(links_country_data.keys()),
-        format_func=links_formatter
-    )
-
-links_df=links_country_data[selected_link]
-
-with res_param_col:
-    choices = res_choices
-    res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x], key="links_res")
-
-with date_range_param:
-    min_index=links_df.index[0]
-    max_index=links_df.index[-1]
-    min_value = datetime.datetime(min_index.year, min_index.month, min_index.day,max_index.hour,max_index.minute)
-    max_value = datetime.datetime(max_index.year, max_index.month, max_index.day,max_index.hour,max_index.minute)
-    values = st.slider(
-            'Select a range of values',
-            min_value, max_value, (min_value, max_value),
-            # step=datetime.timedelta(hours=int(res[:-1])),
-            format="D MMM, HH:mm",
-            label_visibility='hidden',
-            key="links_date"
-        )
-
-links_df=links_df.loc[values[0]:values[1]].resample(res).mean()
-
-with links_plot_col:
-    links_area_plot=links_df.hvplot.area(**kwargs,ylabel=helper.config["links_t_parameter"][selected_link]["unit"],
-    group_label=helper.config["links_t_parameter"][selected_link]["legend_title"])
-    s=hv.render(links_area_plot,backend='bokeh')
     st.bokeh_chart(s, use_container_width=True)
