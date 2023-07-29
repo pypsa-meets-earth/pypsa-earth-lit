@@ -21,3 +21,15 @@ cd pypsa-earth-lit
 pip install -e .
 make -f ./Makefile run_app
 ```
+
+This project is organized with distinct sections, 'pre_run' and 'tools,' both located in the 'utils' folder.The 'tools' section serves a crucial role by importing the 'pypsa' networks and the configuration file, both of which are required across various sections. Moving on to the 'prerun' files, their primary purpose is to prepare dataframes using the imported data. Specifically, they process and manipulate the data obtained from the 'pypsa' networks and extract meaningful information to create the necessary dataframes Subsequently, this processed data is utilized to create informative plots stored in files of pages folder.
+
+Additionally, to enhance user-friendliness, we utilize a config file to define meaningful 'nicenames' and units for the parameters present in our dataframes. These nicenames make it easier for users to understand and interact with the data effectively.
+
+contributions can be made in 'get_edges_df' and 'get_spatial_values_df' functions in the 'spatial_pre_run' file.
+
+'get_edges_df': This function is responsible for fetching data and constructing a dataframe related to edges.
+
+'get_spatial_values_df' function: This function is involved in retrieving spatial data and generating a corresponding dataframe.
+
+To contribute, you can enrich this function by integrating additional spatial data or enhancing the existing data processing logic. The comments within the function will serve as helpful pointers.

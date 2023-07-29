@@ -79,7 +79,6 @@ def get_gen_t_dict():
 
 non_empty_storage_keys=[param for param in config["storage_t_parameter"]]
 
-
 def get_renamed_column(column_name):
     split_arr=column_name.split(" ")
     last=split_arr.pop(-1)

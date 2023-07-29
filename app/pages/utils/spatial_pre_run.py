@@ -95,11 +95,12 @@ def get_edges_df(pypsa_network):
     return base_df
 
 
-# this function is used to make dict for senario page
+# this function gives us the complete data in form of a dict
 def make_dict_senario(pypsa_network,polygon_gpd):
     return_dict = {}
 
     ######### DATA FOR POINTS AND CHOLORPETH MAP #########
+
     return_dict["polygon_gpd"]=polygon_gpd
 
     # converting polygon geometry to points
@@ -116,8 +117,9 @@ def make_dict_senario(pypsa_network,polygon_gpd):
     
     ######### DATA FOR LINES  #########
     
-    # adding getting df for edges and attributs from config
+    # getting df for edges and attributes from config
     edges_df=get_edges_df(pypsa_network)
+
     edges=list(config["network_parameters"].keys())
 
     # making network object in networkx
@@ -135,7 +137,7 @@ def make_dict_senario(pypsa_network,polygon_gpd):
     return return_dict
 
 
-# making return dict for every scenario
+# making return dict for every scenario and complete data to plot that scenario
 # @st.cache_resource
 def make_return_dict():
     return_dict = {}
@@ -143,7 +145,7 @@ def make_return_dict():
     pypsa_networks=tools.get_network_map()
     bus_region_gpd=get_onshore_regions()
     for k in pypsa_networks.keys():
-        
+          
         return_dict[k]=make_dict_senario(pypsa_networks.get(k),bus_region_gpd.get(k))
 
     return return_dict
