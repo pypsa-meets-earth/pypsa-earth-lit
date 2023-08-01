@@ -395,16 +395,16 @@ links_t_parameter:
 ########### SCENARIO COMPARISION parameters
 
 statistics_param_units:
-  Capacity Factor: cf unit
-  Capital Expenditure: ce unit
-  Curtailment: oiho
-  Installed Capacity: ohb
-  Operational Expenditure: teerthg
-  Optimal Capacity: ughhui
-  Revenue: iugiuhg
-  Supply: ytd
-  Withdrawal: jhoijh
+  Capacity Factor: Capacity factor, %
+  Capital Expenditure: Euro
+  Curtailment: MW
+  Installed Capacity: MW
+  Operational Expenditure: Euro
+  Optimal Capacity: MW
+  Revenue: Euro
+  Supply: MW-hours
+  Withdrawal: Euro
 
 second_param_units:
-  CO2 emissions: co2 units
-  optimal generator capacity: gen units
+  CO2 emissions: MtCO2
+  optimal generator capacity: MW
