@@ -49,7 +49,7 @@ def add_values_for_co2(n, parameter, col_name):
 
 def add_values_for_generators(n, _parameter, col_name):
     return (
-        n.generators.groupby(by="carrier")["p_nom"]
+        n.generators.groupby(by="carrier")["p_nom_opt"]
         .sum()
         .drop("load", errors="ignore")
         .get(col_name, default=0)
