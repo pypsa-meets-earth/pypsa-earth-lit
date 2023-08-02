@@ -407,4 +407,7 @@ statistics_param_units:
 
 second_param_units:
   CO2 emissions: MtCO2
+  # TODO Would be worth discussing which parameter does make sense as a second option
+  # strictly speaking, we have Optimal Capacity in the droplist above
+  # but agree that it may be worth to have a visual comparison
   Optimal Capacity: MW
