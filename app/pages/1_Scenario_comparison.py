@@ -56,7 +56,7 @@ def main():
         })
             st.plotly_chart(fig, use_container_width=True)
 
-    elif option == "optimal generator capacity":
+    elif option == "Optimal Capacity":
         gen_df = helper.get_df_for_parameter(
             network_map, None, helper.add_values_for_generators, helper.get_gen_col_names
         )
@@ -64,7 +64,7 @@ def main():
         _,plot_col,_=st.columns([1,80,1])
 
         with plot_col:
-            fig = px.bar(gen_df, y=gen_df.columns, title="optimal generator capacity",labels={
+            fig = px.bar(gen_df, y=gen_df.columns, title="Optimal Capacity",labels={
             "value":tools.config["second_param_units"][option],
             "index":"scenarios"
         })

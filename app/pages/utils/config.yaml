@@ -407,4 +407,4 @@ statistics_param_units:
 
 second_param_units:
   CO2 emissions: MtCO2
-  optimal generator capacity: MW
+  Optimal Capacity: MW
