@@ -35,12 +35,21 @@ def add_values_for_statistics(n, parameter, col_name):
 
 
 def add_values_for_co2(n, parameter, col_name):
-    return n.carriers[parameter].get(col_name, default=0)
+    # https://github.com/PyPSA/PyPSA/issues/520
+    # n.generators_t.p / n.generators.efficiency * n.generators.carrier.map(n.carriers.co2_emissions)
+    df_p = n.generators_t.p
+    df_p.drop(df_p.columns[df_p.columns.str.contains("load")], axis=1, inplace=True)
+    df_gen = n.generators[~n.generators.index.str.contains("load")]
+    co2 = (n.generators_t.p.mean(axis=0) / df_gen.efficiency ) * df_gen.carrier.map(n.carriers[parameter])
+    if co2[co2.index.str.contains(col_name)].empty:
+        return(0)
+    else:
+        return(co2[co2.index.str.contains(col_name)].iloc[0])
 
 
 def add_values_for_generators(n, _parameter, col_name):
     return (
-        n.generators.groupby(by="carrier")["p_nom"]
+        n.generators.groupby(by="carrier")["p_nom_opt"]
         .sum()
         .drop("load", errors="ignore")
         .get(col_name, default=0)
