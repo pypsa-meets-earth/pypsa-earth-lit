@@ -1,4 +1,4 @@
-# Pypsa-Earth-Lit
+# PyPSA-Earth-Lit
 
 Testing streamlit module that works along a stable pypsa-earth package version
 
@@ -110,29 +110,29 @@ The `config.yaml` file encompasses the following important configurations:
 
 4. **Parameter Tracking:** By defining units and providing comprehensive information, `config.yaml` aids in tracking which parameters are being utilized from the **pypsa-earth** networks.
 
-## Using Your Own Pypsa-Earth
+## Using Your Own PyPSA-Earth
 
-If you are new to **Pypsa-Earth**, it is recommended to follow the [tutorial](https://pypsa-earth.readthedocs.io/en/latest/short_tutorial.html) before proceeding with the steps outlined below. Familiarity with **Pypsa-Earth** will enhance your understanding of the following instructions.
+If you are new to **PyPSA-Earth**, it is recommended to follow the [tutorial](https://pypsa-earth.readthedocs.io/en/latest/short_tutorial.html) before proceeding with the steps outlined below. Familiarity with **PyPSA-Earth** will enhance your understanding of the following instructions.
 
-In contrast to the `solve_all_networks` command that uses the default configuration present in the **Pypsa-Earth** root directory, we will be employing a different command: `snakemake -j1 run_all_scenarios`. This command leverages multiple configurations located in `pypsa-earth/configs/scenarios`.
+In contrast to the `solve_all_networks` command that uses the default configuration present in the **PyPSA-Earth** root directory, we will be employing a different command: `snakemake -j1 run_all_scenarios`. This command leverages multiple configurations located in `pypsa-earth/configs/scenarios`.
 
 **Custom Configurations for Scenarios**</br>
 ![Custom Configurations for Scenarios](assets/scenario_configs.png)
 For each scenario, you have the flexibility to define a unique configuration file in the form `config.scenario_name.yaml`. These custom configurations allow you to tailor the parameters and settings specific to each scenario, optimizing the analysis for your project's requirements.
 
-Executing the command `snakemake -j1 run_all_scenarios` triggers **Pypsa-Earth** to process the defined scenarios using their respective configurations. The output is a collection of folders inside the `results` directory, each corresponding to a scenario. These folders contain essential data and results produced by **Pypsa-Earth**.
+Executing the command `snakemake -j1 run_all_scenarios` triggers **PyPSA-Earth** to process the defined scenarios using their respective configurations. The output is a collection of folders inside the `results` directory, each corresponding to a scenario. These folders contain essential data and results produced by **PyPSA-Earth**.
 
 ![Results Directory](assets/scenario_results.png)
 
-The generated folders within the `results` directory, along with other relevant data from **Pypsa-Earth**, serve as the foundation for the **Pypsa-Earth-Lit** application. **Pypsa-Earth-Lit** seamlessly integrates this data, enabling you to visualize, analyze, and interact with scenario-specific insights through informative plots and visualizations.
+The generated folders within the `results` directory, along with other relevant data from **PyPSA-Earth**, serve as the foundation for the **PyPSA-Earth-Lit** application. **PyPSA-Earth-Lit** seamlessly integrates this data, enabling you to visualize, analyze, and interact with scenario-specific insights through informative plots and visualizations.
 
-Refer to the attached images and the solved **Pypsa-Earth** project in this repository for a clearer understanding of the structure and output.
+Refer to the attached images and the solved **PyPSA-Earth** project in this repository for a clearer understanding of the structure and output.
 
-## Final Step: Connecting Pypsa-Earth-Lit to Pypsa-Earth
+## Final Step: Connecting PyPSA-Earth-Lit to PyPSA-Earth
 
-We are now at the threshold of unlocking the power of insightful visualizations using **Pypsa-Earth-Lit**. Before diving into the world of awesome graphs, there is one final step that bridges the gap between your **Pypsa-Earth** scenarios and the **Pypsa-Earth-Lit** application.
+We are now at the threshold of unlocking the power of insightful visualizations using **PyPSA-Earth-Lit**. Before diving into the world of awesome graphs, there is one final step that bridges the gap between your **PyPSA-Earth** scenarios and the **PyPSA-Earth-Lit** application.
 
-![Pypsa-Earth-Lit](assets/config_scenario_name.png)
+![PyPSA-Earth-Lit](assets/config_scenario_name.png)
 
 ### Adding Scenario Names to `config.yaml`
 
@@ -140,17 +140,17 @@ We are now at the threshold of unlocking the power of insightful visualizations 
 
 2. In the `config.yaml` file, locate the section under `scenario_names`. Here, you will find predefined test scenario names.
 
-3. Add your resulting scenario names to this section, providing user-friendly names for each scenario. This crucial step establishes the connection between **Pypsa-Earth-Lit** and your **Pypsa-Earth** scenarios.
+3. Add your resulting scenario names to this section, providing user-friendly names for each scenario. This crucial step establishes the connection between **PyPSA-Earth-Lit** and your **PyPSA-Earth** scenarios.
 
-By adding scenario names and corresponding user-friendly names to the `config.yaml` file, you enable **Pypsa-Earth-Lit** to seamlessly access and visualize the data generated by your **Pypsa-Earth** project.
+By adding scenario names and corresponding user-friendly names to the `config.yaml` file, you enable **PyPSA-Earth-Lit** to seamlessly access and visualize the data generated by your **PyPSA-Earth** project.
 
 ### Visualizing Awesome Graphs
 
-With the scenario names linked in the `config.yaml` file, you are now ready to immerse yourself in the world of awesome graphs and visualizations.Navigate to **Pypsa-Earth-Lit** application, launch it by executing the following commands in your terminal:
+With the scenario names linked in the `config.yaml` file, you are now ready to immerse yourself in the world of awesome graphs and visualizations.Navigate to **PyPSA-Earth-Lit** application, launch it by executing the following commands in your terminal:
 ```console- make -f ./Makefile run_app```
 
-explore the insights offered by your **Pypsa-Earth** scenarios.
+explore the insights offered by your **PyPSA-Earth** scenarios.
 
-Your path to insights is complete. Congratulations on connecting the dots between **Pypsa-Earth** and **Pypsa-Earth-Lit** !!!
+Your path to insights is complete. Congratulations on connecting the dots between **PyPSA-Earth** and **PyPSA-Earth-Lit** !!!
 
 ---
