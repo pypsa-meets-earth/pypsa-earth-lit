@@ -15,20 +15,15 @@ config=open_yaml_file("app/pages/utils/config.yaml")
 
 @st.cache_resource
 def get_network_map():
-    RESULTS_DIR = pathlib.Path("../pypsa-earth", "results")
+    
     networks = {}
-    for dir in os.listdir(RESULTS_DIR):
-        entry = pathlib.Path(RESULTS_DIR, dir)
-        if not entry.is_dir():
-            continue
+    scenario_names = config["scenario_names"].keys()
 
-        for dir_child in os.listdir(pathlib.Path(entry, "networks")):
+    for scenario in scenario_names:
+        for dir_child in os.listdir(pathlib.Path("../pypsa-earth" ,"results",scenario, "networks")):
             if not dir_child.endswith(".nc"):
                 continue
-            networks[dir] = pypsa.Network(
-                pathlib.Path(entry, "networks", dir_child)
-            )
+            networks[scenario] = pypsa.Network(
+                pathlib.Path("../pypsa-earth" ,"results",scenario, "networks", dir_child))
+
     return networks
-
-
-
