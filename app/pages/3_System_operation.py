@@ -87,7 +87,7 @@ _, gen_plot_col, _ = st.columns([1, 80, 1])
 #         format_func=gen_formatter
 #     )
 
-gen_df=country_data["p"].drop("Load", axis=1)
+gen_df=country_data["p"].drop("Load", axis=1, errors="ignore")
 
 # with res_param_col:
 #     choices = res_choices
