@@ -88,8 +88,9 @@ def _get_gen_df(network,gpd_bus_regions):
 def _make_plot_lines_df(pypsa_network):
     nLines=pypsa_network.lines.copy()
     nLines["total_capacity"] = nLines.s_nom_opt.clip(lower=1e-3)
-    nLines["reinforcement"] = nLines.s_nom.clip(lower=1e-3)- nLines.s_nom_opt.clip(lower=1e-3)
+    nLines["reinforcement"] = nLines.s_nom_opt.clip(lower=1e-3) - nLines.s_nom.clip(lower=1e-3)
     nLines["original_capacity"] = nLines.s_nom.clip(lower=1e-3)
+    # TODO What is the idea of using s_nom_min instead of s_nom_max?
     nLines["max_capacity"] = nLines.s_nom_min.clip(lower=1e-3)
 
     return nLines
