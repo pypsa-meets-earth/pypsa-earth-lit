@@ -42,7 +42,7 @@ def _get_gen_unique_names(network):
     gen_unique_names.remove("load")
     return gen_unique_names
 
-slected_cols_gen = ["p_nom","marginal_cost","capital_cost"]
+slected_cols_gen = ["cf", "p_nom", "p_nom_opt", "marginal_cost", "capital_cost", "bus_load"]
 
 def _get_gen_df(network,gpd_bus_regions):
     gen_unique_names=_get_gen_unique_names(network)

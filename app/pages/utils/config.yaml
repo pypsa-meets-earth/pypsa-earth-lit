@@ -290,8 +290,14 @@ scenario_names:
 ########## spatial parameters
 
 spatial_parameters:
+  cf:
+    nice_name: Capacity Factor
+    unit: "%" 
   p_nom:
-    nice_name: Nominal Power
+    nice_name: Optimal Nominal Power
+    unit: (MW)
+  p_nom_opt:
+    nice_name: Original Nominal Power
     unit: (MW)
   marginal_cost:
     nice_name: Cost During Production
@@ -299,6 +305,9 @@ spatial_parameters:
   capital_cost:
     nice_name: Cost Of Expanding Generation
     unit: (euro/MW)
+  bus_load:
+    nice_name: Cost Of Expanding Generation
+    unit: (MW)    
 
 network_parameters:
   total_capacity: Total Capacity (GW)
