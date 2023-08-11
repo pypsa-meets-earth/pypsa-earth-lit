@@ -28,9 +28,9 @@ from shapely.geometry import Point, LineString, shape
 import datetime
 
 
-gen_df=helper.get_gen_t_dict()
-storage_df=helper.get_storage_t_dict()
-links_df=helper.get_links_t_dict()
+gen_df = helper.get_gen_t_dict()
+storage_df = helper.get_storage_t_dict()
+links_df = helper.get_links_t_dict()
 
 res_choices = helper.config["operation"]["resolution"]
 
@@ -55,7 +55,7 @@ with main_col:
     selected_network = st.selectbox(
         "Select which scenario's plot you want to see :",
         list(gen_df.keys()),
-        format_func=scenario_formatter,
+        format_func = scenario_formatter,
     )
 
 country_data=gen_df.get(selected_network)
@@ -65,7 +65,7 @@ country_data=gen_df.get(selected_network)
 st.subheader("Generators plot is here.")
 
 def gen_formatter(gen):
-    return helper.config["gen_t_parameter"][gen]["nice_name"] + " "+helper.config["gen_t_parameter"][gen]["unit"]
+    return helper.config["gen_t_parameter"][gen]["nice_name"]
 
 _, gen_param_col,_,res_param_col,_,date_range_param, _ = st.columns([1,20,1,20,1,50,1])
 _, gen_plot_col, _ = st.columns([1,80,1])
@@ -81,7 +81,7 @@ gen_df=country_data[selected_gen]
 
 with res_param_col:
     choices = res_choices
-    res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x],key="gen_res")
+    res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x], key="gen_res")
 
 with date_range_param:
     min_index=gen_df.index[0]
@@ -98,13 +98,13 @@ with date_range_param:
         )
     
 
-gen_df=gen_df.loc[values[0]:values[1]].resample(res).mean()
+gen_df = gen_df.loc[values[0]:values[1]].resample(res).mean()
 
-gen_area_plot=gen_df.hvplot.area(**kwargs,group_label=helper.config["gen_t_parameter"][selected_gen]["legend_title"]
-) 
-gen_area_plot=gen_area_plot.opts(ylabel=helper.config["gen_t_parameter"][selected_gen]["unit"],
-   )
-s=hv.render(gen_area_plot,backend='bokeh')
+ylab = helper.config["gen_t_parameter"][selected_gen]["nice_name"] + " ["+str(helper.config["gen_t_parameter"][selected_gen]["unit"] + "]")
+# Not sure we really need a title, as there is still a header
+gen_area_plot = gen_df.hvplot.area(**kwargs, group_label=helper.config["gen_t_parameter"][selected_gen]["legend_title"]) 
+gen_area_plot = gen_area_plot.opts(xlabel="", ylabel=ylab)
+s=hv.render(gen_area_plot, backend='bokeh')
 
 with gen_plot_col:
     st.bokeh_chart(s, use_container_width=True)
