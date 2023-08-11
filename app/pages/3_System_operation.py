@@ -77,7 +77,7 @@ with gen_param_col:
         format_func=gen_formatter
     )
 
-gen_df=country_data[selected_gen]
+gen_df=country_data[selected_gen].drop("Load", axis=1)
 
 with res_param_col:
     choices = res_choices
