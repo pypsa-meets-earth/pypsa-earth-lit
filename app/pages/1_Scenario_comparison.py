@@ -25,13 +25,23 @@ def main():
     df = helper.get_df_for_parameter(
         network_map, option, helper.add_values_for_statistics, helper.get_stats_col_names
     )
-    _,plot_col,_=st.columns([1,80,1])
+    _, plot_col,_ = st.columns([1, 80, 1])
     with plot_col:
-        st.plotly_chart(px.bar(df, y=df.columns,labels={
-            "value":get_stat_unit(option),
-            "index":"scenarios"
-        }, title=option),use_cointainer_width=True
-                    )
+        # TODO bar can be replaced scatter for CF
+        if option == "Capacity Factor":
+            st.plotly_chart(px.scatter(df, y=df.columns,
+                labels={
+                    "value":get_stat_unit(option),
+                    "index":"scenarios"
+                }, title=option),use_cointainer_width=True
+            )
+        else:
+            st.plotly_chart(px.bar(df, y=df.columns, 
+                labels={
+                    "value":get_stat_unit(option),
+                    "index":"scenarios"
+                }, title=option),use_cointainer_width=True
+            )    
 
     ##### second dropdown plotting n.carrier #####
     option = st.selectbox(
