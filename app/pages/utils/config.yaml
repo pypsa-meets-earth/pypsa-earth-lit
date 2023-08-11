@@ -361,45 +361,45 @@ carrier_colors:
 
 gen_t_parameter:
   p:
-    nice_name: Active Power At Bus
-    unit: (MW)
-    legend_title: Carriers
+    nice_name: Supply
+    unit: MW
+    legend_title: " "
   p_max_pu:
     nice_name: Maximum Output Possible Per Unit Nominal Power
-    unit: (MW)
-    legend_title: Carriers
+    unit: MW
+    legend_title: " "
 
 storage_t_parameter:
   p:
     nice_name: Active Power
-    unit: (MW)
+    unit: MW
     legend_title: Region Number and Storage Type
   inflow:
     nice_name: Inflow To State Of Charge
-    unit: (MW)
+    unit: MW
     legend_title: Region Number and Storage Type
   spill:
     nice_name: Spillage For Each Snapshot
-    unit: (MW)
+    unit: MW
     legend_title: Region Number and Storage Type
   state_of_charge:
     nice_name: State Of Charge
-    unit: (MWh)
+    unit: MWh
     legend_title: Region Number and Storage Type
 
 links_t_parameter:
   p0:
-    nice_name: Active Power Flow
-    unit: (MW)
-    legend_title: Not Sure
+    nice_name: Demand
+    unit: MW
+    legend_title: " "
   mu_upper:
     nice_name: Shadow Price Of Maximum Nominal Power
-    unit: (euro/MW)
-    legend_title: Not Sure
+    unit: euro/MW
+    legend_title: " "
   mu_lower:
     nice_name: Shadow Price Of Minimum Nominal Power
-    unit: (euro/MW)
-    legend_title: Not Sure
+    unit: euro/MW
+    legend_title: " "
 
 ########### SCENARIO COMPARISION parameters
 
