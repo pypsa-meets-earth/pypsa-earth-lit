@@ -30,7 +30,7 @@ from shapely.geometry import Point, LineString, shape
 
 
 data=helper.make_return_dict()
-st.title("System operation")
+st.title("Spatial configuration")
 
 
 _, main_col, _ = st.columns([1,90,1])
@@ -80,7 +80,7 @@ with col1:
 
     colorpeth_param = st.selectbox(
             "Regions", colorpeth_nodes_param, 
-            format_func=  spatial_param_formatter,
+            format_func = spatial_param_formatter,
             key="colorpeth_param_carrier"
 
         )
@@ -121,7 +121,7 @@ with col1:
 with col3:
     points_param = st.selectbox(
             "Nodes", colorpeth_nodes_param,
-            format_func=  spatial_param_formatter,
+            format_func = spatial_param_formatter,
            key="points_param_carrier"
         )
    
