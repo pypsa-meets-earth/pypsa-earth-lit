@@ -306,14 +306,14 @@ spatial_parameters:
     nice_name: Cost Of Expanding Generation
     unit: (euro/MW)
   bus_load:
-    nice_name: Cost Of Expanding Generation
+    nice_name: Electricity Load
     unit: (MW)    
 
 network_parameters:
-  total_capacity: Total Capacity (GW)
-  reinforcement: Reinforcement (GW)
-  original_capacity: Original Capacity (GW)
-  max_capacity: Maximum Capacity (GW)
+  total_capacity: Total Capacity (MVA)
+  reinforcement: Reinforcement (MVA)
+  original_capacity: Original Capacity (MVA)
+  max_capacity: Maximum Capacity (MVA)
   length: Line Length (km)
 
 carrier:
