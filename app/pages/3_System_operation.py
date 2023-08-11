@@ -27,10 +27,15 @@ import hvplot.networkx as hvnx
 from shapely.geometry import Point, LineString, shape
 import datetime
 
+non_empth_links_keys=[param for param in helper.config["links_t_parameter"]]
+non_empth_loads_keys=[param for param in helper.config["loads_t_parameter"]]
+non_empth_stores_keys=[param for param in helper.config["stores_t_parameter"]]
 
 gen_df = helper.get_gen_t_dict()
 storage_df = helper.get_storage_t_dict()
-links_df = helper.get_links_t_dict()
+links_df = helper.get_links_t_dict("links_t", non_empth_links_keys)
+loads_df = helper.get_links_t_dict("loads_t", non_empth_loads_keys)
+stores_df = helper.get_links_t_dict("stores_t", non_empth_stores_keys)
 
 res_choices = helper.config["operation"]["resolution"]
 
@@ -122,6 +127,8 @@ with gen_plot_col:
 _, links_plot_col, _ = st.columns([1, 80, 1])
 
 links_country_data=links_df.get(selected_network)
+loads_country_data=loads_df.get(selected_network)
+stores_country_data=stores_df.get(selected_network)
 
 def links_formatter(link):
     return helper.config["links_t_parameter"][link]["nice_name"] + " "+helper.config["links_t_parameter"][link]["unit"]
@@ -134,6 +141,16 @@ def links_formatter(link):
 #     )
 
 links_df = links_country_data["p0"]
+loads_df = loads_country_data["p"]
+stores_df = stores_country_data["p"]
+
+# TODO Remove hard-coding
+h2_cols = [col for col in stores_df.columns if "H2" in col]
+battery_cols = [col for col in stores_df.columns if "battery" in col]
+
+demand_df=pd.DataFrame({"load": loads_df.sum(axis=1)})
+demand_df["H2"]=stores_df[h2_cols].sum(axis=1)
+demand_df["battery"]=stores_df[battery_cols].sum(axis=1)
 
 # with res_param_col:
 #     choices = res_choices
@@ -158,21 +175,9 @@ links_df=links_df.loc[values[0]:values[1]].resample(res).mean()
 ylab = helper.config["links_t_parameter"]["p0"]["nice_name"] + " ["+str(helper.config["links_t_parameter"]["p0"]["unit"] + "]")
 
 with links_plot_col:
-    # supply_df=pd.DataFrame(index=links_df.index)
-    demand_df=pd.DataFrame(index=links_df.index)
-    # supply_df["battery charger"]=links_df["battery charger"]
-    # supply_df["H2 Electrolysis"]=links_df["H2 Electrolysis"]
-    demand_df["battery discharger"]=links_df["battery discharger"]
-    demand_df["Fuel Cell"]=links_df["Fuel Cell"]
-    # supply_area_plot=supply_df.hvplot.area(**kwargs,ylabel=helper.config["links_t_parameter"][selected_link]["unit"],
-    # group_label=helper.config["links_t_parameter"][selected_link]["legend_title"])
     demand_area_plot=demand_df.hvplot.area(**kwargs, ylabel=ylab,
     group_label=helper.config["links_t_parameter"]["p0"]["legend_title"])  
-    # s=hv.render(supply_area_plot,backend='bokeh')
     s2=hv.render(demand_area_plot, backend='bokeh')
-    # st.subheader("Supply")
-    # st.bokeh_chart(s, use_container_width=True)
-    # st.subheader("Consumption")
     st.bokeh_chart(s2, use_container_width=True)
 
 
