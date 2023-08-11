@@ -27,9 +27,10 @@ def main():
     )
     _, plot_col,_ = st.columns([1, 80, 1])
     with plot_col:
-        # TODO bar can be replaced scatter for CF
         if option == "Capacity Factor":
             st.plotly_chart(px.scatter(df, y=df.columns,
+                # TODO Would be nice to adjust markers
+                # size=[20],
                 labels={
                     "value":get_stat_unit(option),
                     "index":"scenarios"
