@@ -387,6 +387,16 @@ storage_t_parameter:
     unit: MWh
     legend_title: Region Number and Storage Type
 
+loads_t_parameter:
+  p: 
+    nice_name: Demand
+    unit: MW
+
+stores_t_parameter:
+  p: 
+    nice_name: Load State
+    unit: MW
+
 links_t_parameter:
   p0:
     nice_name: Demand
