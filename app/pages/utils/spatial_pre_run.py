@@ -61,24 +61,22 @@ def _get_gen_df(network,gpd_bus_regions):
         "name": network.buses_t.p.columns})
 
     for carrier_in_unique in network_res_carriers:
-        i_buses = network.buses_t.p.sum(axis=0).index
-
         generator_network = network.generators.copy()
+        generator_network_t = network.generators_t.copy()
 
-        # carrier sorted value from generator_network
         i_carrier = generator_network["carrier"] == carrier_in_unique
         carrier_df = generator_network[i_carrier]
         i_gens_idx = generator_network[i_carrier].index
 
         # capacity factors
-        p_gen = generator_network_t.p[i_gens_idx].mean(axis=0)     
+        p_gen = generator_network_t["p"][i_gens_idx].mean(axis=0)     
         carrier_df["cf"] = 100 * (p_gen / generator_network[i_carrier].p_nom_opt)
 
         # curtailment
         carrier_df["crt"] = 100 * (
-            ((generator_network[i_carrier].p_nom_opt * generator_network_t.p_max_pu[i_gens_idx]) - 
-            generator_network_t.p[i_gens_idx])/
-            (generator_network[i_carrier].p_nom_opt * generator_network_t.p_max_pu[i_gens_idx])
+            ((generator_network[i_carrier].p_nom_opt * generator_network_t["p_max_pu"][i_gens_idx]) - 
+            generator_network_t["p"][i_gens_idx])/
+            (generator_network[i_carrier].p_nom_opt * generator_network_t["p_max_pu"][i_gens_idx])
         ).mean()
 
         # used potential
