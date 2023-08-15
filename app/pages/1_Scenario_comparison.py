@@ -79,7 +79,7 @@ def main():
         )
     stat_table = helper.add_statistics(network_map[scenario])
     with table_col:
-        st.write(stat_table)          
+        st.write(stat_table.style.format(precision=2, thousands=" ", decimal="."))          
 
     ##### second dropdown plotting n.carrier #####
     option = st.selectbox(
