@@ -56,6 +56,15 @@ _, main_col, _, suppl_col, _ = st.columns([1, 35, 1, 20, 1])
 def scenario_formatter(scenario):
     return helper.config["scenario_names"][scenario]
 
+def get_carrier_map():
+    return helper.config["carrier"]
+
+def get_colors_map():
+    return helper.config["tech_colors"]
+
+carriers_map = get_carrier_map()
+tech_map = dict(map(reversed, carriers_map.items()))
+
 with main_col:
     selected_network = st.selectbox(
         "Select which scenario's plot you want to see :",
@@ -110,9 +119,15 @@ with date_range_param:
 
 gen_df = gen_df.loc[values[0]:values[1]].resample(res).mean()
 
+df_techs = [tech_map[c] for c in gen_df.columns]
+tech_colors = get_colors_map()
+plot_color = [tech_colors[c] for c in df_techs]
+
 ylab = helper.config["gen_t_parameter"]["p"]["nice_name"] + " ["+str(helper.config["gen_t_parameter"]["p"]["unit"] + "]")
 # Not sure we really need a title, as there is still a header
-gen_area_plot = gen_df.hvplot.area(**kwargs, group_label=helper.config["gen_t_parameter"]["p"]["legend_title"]) 
+gen_area_plot = gen_df.hvplot.area(**kwargs, 
+    group_label=helper.config["gen_t_parameter"]["p"]["legend_title"],
+    color=plot_color) 
 gen_area_plot = gen_area_plot.opts(xlabel="", ylabel=ylab)
 s=hv.render(gen_area_plot, backend='bokeh')
 
@@ -172,11 +187,15 @@ demand_df["battery"]=stores_df[battery_cols].sum(axis=1)
 
 links_df=links_df.loc[values[0]:values[1]].resample(res).mean()
 
+tech_colors = get_colors_map()
+plot_color = [tech_colors[c] for c in demand_df.columns]
+
 ylab = helper.config["links_t_parameter"]["p0"]["nice_name"] + " ["+str(helper.config["links_t_parameter"]["p0"]["unit"] + "]")
 
 with links_plot_col:
     demand_area_plot=demand_df.hvplot.area(**kwargs, ylabel=ylab,
-    group_label=helper.config["links_t_parameter"]["p0"]["legend_title"])  
+        group_label=helper.config["links_t_parameter"]["p0"]["legend_title"],
+        color = plot_color)  
     s2=hv.render(demand_area_plot, backend='bokeh')
     st.bokeh_chart(s2, use_container_width=True)
 
