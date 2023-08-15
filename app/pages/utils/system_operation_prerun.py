@@ -107,37 +107,40 @@ def get_storage_t_dict():
     return result
 
 ############# for links #####################
-def get_links_unique_cols(pypsa_network):
-    all_cols=pypsa_network.links_t["p0"].columns
+def get_links_unique_cols(pypsa_network, pypsa_component, col_name):
+    #all_cols=pypsa_network.links_t["p0"].columns
+    all_cols=getattr(pypsa_network, pypsa_component)[col_name].columns
     split_cols= []
     for k in all_cols:
         split_cols.append(k.split(" ")[-2]+" "+k.split(" ")[-1])
     return list(set(split_cols))
 
-def get_links_df(pypsa_network,links_t_key):
-    links_t_df=pypsa_network.links_t[links_t_key]
-    unique_cols=get_links_unique_cols(pypsa_network)
-    resultant_df=pd.DataFrame(0,columns=unique_cols,index=links_t_df.index)
+def get_links_df(pypsa_network, pypsa_component, component_key):
+    #links_t_df=pypsa_network.links_t[links_t_key]
+    pypsa_df = getattr(pypsa_network, pypsa_component)[component_key]
+    unique_cols=get_links_unique_cols(pypsa_network, pypsa_component, component_key)
+    resultant_df=pd.DataFrame(0,columns=unique_cols, index=pypsa_df.index)
 
     for carrier in unique_cols:
-        for links_carrier in links_t_df.columns:
+        for links_carrier in pypsa_df.columns:
             if carrier.split(" ")[-1] in links_carrier.split(" ") :
-                resultant_df[carrier]+=links_t_df[links_carrier]
+                resultant_df[carrier]+=pypsa_df[links_carrier]
     
     return resultant_df
 
-non_empth_links_keys=[param for param in config["links_t_parameter"]]
-
+#non_empth_links_keys=[param for param in config["links_t_parameter"]]
+#non_empth_loads_keys=[param for param in config["loads_t_parameter"]]
+#non_empth_stores_keys=[param for param in config["stores_t_parameter"]]
 
 # @st.cache_resource
-def get_links_t_dict():
+def get_links_t_dict(component_key, component_keys):
     result={}
 
     for network_key in pypsa_network_map.keys():
         network_dict={}
         network = pypsa_network_map.get(network_key)
-        for non_empty_key in non_empth_links_keys:
-            network_dict[non_empty_key]=get_links_df(network,non_empty_key)
+        for non_empty_key in component_keys:
+            network_dict[non_empty_key]=get_links_df(network, component_key, non_empty_key)
         
         result[network_key]=network_dict
     return result

@@ -42,34 +42,55 @@ def _get_gen_unique_names(network):
     gen_unique_names.remove("load")
     return gen_unique_names
 
-slected_cols_gen = ["p_nom","marginal_cost","capital_cost"]
+# TODO Add load and stores
+selected_cols_gen = ["cf", "p_nom", "p_nom_opt", "marginal_cost", "capital_cost"]# "bus_load"]
 
 def _get_gen_df(network,gpd_bus_regions):
-    gen_unique_names=_get_gen_unique_names(network)
-    multi_index= pd.MultiIndex.from_product([gen_unique_names, slected_cols_gen],
+    res_carriers_names = ["solar", "onwind", "offwind-ac", "offwind-dc", "hydro", "ror", "geothermal", "biomass"]
+    network_carriers = list(network.generators.carrier.unique())#.remove("load")
+    network_res_carriers = [x for x in res_carriers_names if x in network_carriers]
+    # network_carriers replaced by network_res_carriers to focus on RES
+    multi_index= pd.MultiIndex.from_product([network_res_carriers, selected_cols_gen],
     names=['carrier','parameter'])
     param_bus_value_df = pd.DataFrame( index=multi_index,columns=gpd_bus_regions.name)
+    
+    i_buses = network.buses_t.p.sum(axis=0).index
+    load_df = pd.DataFrame({"bus_load": network.buses_t.p.sum(axis=0), "name": network.buses_t.p.columns})
 
-    for carrier_in_unique in gen_unique_names:
+    for carrier_in_unique in network_res_carriers:
+        i_buses = network.buses_t.p.sum(axis=0).index
+
         generator_network=network.generators.copy()
         # carrier sorted value from generator_network
-        carrier_df=generator_network[generator_network["carrier"] == carrier_in_unique]
+        i_carrier = generator_network["carrier"] == carrier_in_unique
+        carrier_df = generator_network[i_carrier]
+        # calculate capacity factors
+        p_gen = network.generators_t.p[network.generators[i_carrier].index].mean(axis=0)
+        # TODO since p_nom_opt can be zero, there may be a better way to calculate cf       
+        carrier_df["cf"] = 100 * (p_gen / generator_network[i_carrier].p_nom_opt)
+
         # arranging according to geopandas bus regions
         temp_name_series = pd.Series([0]*len(gpd_bus_regions), index=gpd_bus_regions.name, name="bus")
-        # merging both to get all params df
-        merged_gen_df=carrier_df.merge(temp_name_series, left_on="bus", right_on="name", how="right")
-        # putting it in the param_bus_value_df 
-        for param in slected_cols_gen:
+
+        merged_gen_df = (
+            carrier_df
+            .merge(temp_name_series, left_on="bus", right_on="name", how="right")
+            # TODO MultiIndex structure leads to identical load entries for each carrier - should be improved
+            #.merge(load_df, left_on="bus_x", right_on="name", how="left")
+        )
+        # putting it in the param_bus_value_df for each carrier in generators
+        for param in selected_cols_gen:
             param_bus_value_df.loc[(carrier_in_unique, param)]=list(merged_gen_df[param])
 
-    param_bus_value_df.replace([np.inf, -np.inf,np.nan], 0, inplace=True)
+    param_bus_value_df.replace([np.inf, -np.inf, np.nan], 0, inplace=True)
     return param_bus_value_df
 
 def _make_plot_lines_df(pypsa_network):
     nLines=pypsa_network.lines.copy()
     nLines["total_capacity"] = nLines.s_nom_opt.clip(lower=1e-3)
-    nLines["reinforcement"] = nLines.s_nom.clip(lower=1e-3)- nLines.s_nom_opt.clip(lower=1e-3)
+    nLines["reinforcement"] = nLines.s_nom_opt.clip(lower=1e-3) - nLines.s_nom.clip(lower=1e-3)
     nLines["original_capacity"] = nLines.s_nom.clip(lower=1e-3)
+    # TODO What is the idea of using s_nom_min instead of s_nom_max?
     nLines["max_capacity"] = nLines.s_nom_min.clip(lower=1e-3)
 
     return nLines
