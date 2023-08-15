@@ -57,7 +57,22 @@ def main():
                     "value":get_stat_unit(option),
                     "index":"scenarios"
                 }, title=option),use_cointainer_width=True
-            )    
+            ) 
+    
+    ## in table would be of interest for a selected parameter only
+    #st.write(df)
+
+    sc_names = list(network_map.keys())
+
+    _, table_col, _ = st.columns([1, 50, 1])
+    with table_col:
+        scenario = st.selectbox(
+            "Select scenario",
+            sc_names,
+        )
+    stat_table = helper.add_statistics(network_map[scenario])
+    with table_col:
+        st.write(stat_table)          
 
     ##### second dropdown plotting n.carrier #####
     option = st.selectbox(

@@ -33,6 +33,9 @@ def get_df_for_parameter(network_map, parameter, get_values_fn, get_cols_fn):
 def add_values_for_statistics(n, parameter, col_name):
     return n.statistics()[parameter].loc["Generator"][col_name]
 
+def add_statistics(n):
+    return n.statistics()
+
 
 def add_values_for_co2(n, parameter, col_name):
     # https://github.com/PyPSA/PyPSA/issues/520
