@@ -55,10 +55,10 @@ def main():
                 labels={
                     "value":get_stat_unit(option),
                     "index":"scenarios"
-                }, title=option),use_cointainer_width=True
+                }, title=option), use_cointainer_width=True
             )
         else:
-            st.plotly_chart(px.bar(df, y=df.columns, 
+            st.plotly_chart(px.bar(df, y=df.columns,
                 color_discrete_sequence=plot_color,                    
                 labels={
                     "value":get_stat_unit(option),

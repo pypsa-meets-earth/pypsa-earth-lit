@@ -116,7 +116,7 @@ def _make_plot_lines_df(pypsa_network):
 
 ##### add data to these df and define them in config #####
 
-def get_spatial_values_df(pypsa_network,gpd_bus_regions):
+def get_spatial_values_df(pypsa_network, gpd_bus_regions):
     # this df is a multiindex df with carrier and parameter as index and bus regions as columns
     # add new row with index (carrier,parameter) and values as list of values for each bus region (in order)
     # what ever parameters are added to indexes in this df should be added to config "spatial_parameters" along with nice names
