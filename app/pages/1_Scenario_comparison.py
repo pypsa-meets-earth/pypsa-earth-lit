@@ -27,6 +27,8 @@ def main():
 
     ###### first dropdown plotting n.statistics #####
     params = list(network_map.values())[0].statistics().columns
+
+    st.header("Statistics plot")  
     option = st.selectbox(
         "Select your metric",
         params,
@@ -71,6 +73,8 @@ def main():
 
     sc_names = list(network_map.keys())
 
+    st.header("Network statistics")
+
     _, table_col, _ = st.columns([1, 50, 1])
     with table_col:
         scenario = st.selectbox(
@@ -81,9 +85,11 @@ def main():
     with table_col:
         st.write(stat_table.style.format(precision=2, thousands=" ", decimal="."))          
 
+
+    st.header("Operation plots")    
     ##### second dropdown plotting n.carrier #####
     option = st.selectbox(
-        "What would you like to see?",
+        "Which plot would you like to see?",
         tools.config["second_param_units"]
     )
 
