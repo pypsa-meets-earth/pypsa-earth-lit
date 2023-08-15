@@ -18,6 +18,7 @@ tech_colors:
   hydroelectricity: "#298c81"
   PHS: "#51dbcc"
   wave: "#a7d4cf"
+  geothermal: "gray"
   # solar
   solar: "#f9d002"
   solar PV: "#f9d002"
