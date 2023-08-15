@@ -74,6 +74,8 @@ tech_colors:
   solid biomass CHP CC: "#aeb841"
   solid biomass for industry co2 from atmosphere: "#736412"
   solid biomass for industry co2 to stored: "#47411c"
+  # demand
+  load: "red"
   # power transmission
   lines: "#6c9459"
   transmission lines: "#6c9459"
