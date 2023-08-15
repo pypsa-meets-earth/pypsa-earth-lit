@@ -118,7 +118,7 @@ def get_spatial_values_df(pypsa_network,gpd_bus_regions):
     # this df is a multiindex df with carrier and parameter as index and bus regions as columns
     # add new row with index (carrier,parameter) and values as list of values for each bus region (in order)
     # what ever parameters are added to indexes in this df should be added to config "spatial_parameters" along with nice names
-    base_df=_get_gen_df(pypsa_network,gpd_bus_regions)
+    base_df = _get_gen_df(pypsa_network, gpd_bus_regions)
 
     return base_df
 
@@ -126,30 +126,30 @@ def get_spatial_values_df(pypsa_network,gpd_bus_regions):
 def get_edges_df(pypsa_network):
     #  making base df for edges with lines 
     #  add other columns with data should be defined in config "network_parameters" along with nice names
-    base_df=_make_plot_lines_df(pypsa_network)
+    base_df = _make_plot_lines_df(pypsa_network)
 
 
     return base_df
 
 
 # this function gives us the complete data in form of a dict
-def make_dict_senario(pypsa_network,polygon_gpd):
+def make_dict_senario(pypsa_network, polygon_gpd):
     return_dict = {}
 
     ######### DATA FOR POINTS AND CHOLORPETH MAP #########
 
-    return_dict["polygon_gpd"]=polygon_gpd
+    return_dict["polygon_gpd"] = polygon_gpd
 
     # converting polygon geometry to points
-    x=list(polygon_gpd["x"].values)
-    y=list(polygon_gpd["y"].values)
+    x = list(polygon_gpd["x"].values)
+    y = list(polygon_gpd["y"].values)
     points = polygon_gpd.copy()
     points.geometry = gpd.points_from_xy(x, y, crs=4326)
 
-    return_dict["nodes_gpd"]=points
+    return_dict["nodes_gpd"] = points
 
     # base df with all values for all parameters
-    return_dict["nodes_polygon_df"]=get_spatial_values_df(pypsa_network,polygon_gpd)
+    return_dict["nodes_polygon_df"] = get_spatial_values_df(pypsa_network,polygon_gpd)
 
     
     ######### DATA FOR LINES  #########
