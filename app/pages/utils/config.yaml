@@ -290,15 +290,18 @@ scenario_names:
 ########## spatial parameters
 
 spatial_parameters:
+  p_nom_opt:
+    nice_name: Capacity
+    unit: (MW)  
   cf:
     nice_name: Capacity Factor
-    unit: "%" 
-  p_nom:
-    nice_name: Optimal Nominal Power
-    unit: (MW)
-  p_nom_opt:
-    nice_name: Original Nominal Power
-    unit: (MW)
+    unit: "%"
+  crt:
+    nice_name: Curtailment
+    unit: "%"
+  usdpt:
+    nice_name: Used Potential
+    unit: "%"       
   marginal_cost:
     nice_name: Cost During Production
     unit: (euro/MWh)
