@@ -43,31 +43,49 @@ def _get_gen_unique_names(network):
     return gen_unique_names
 
 # TODO Add load and stores
-selected_cols_gen = ["cf", "p_nom", "p_nom_opt", "marginal_cost", "capital_cost"]# "bus_load"]
+selected_cols_gen = ["p_nom_opt", "cf", "crt", "usdpt", "marginal_cost", 
+    "capital_cost"]# "bus_load"]
 
 def _get_gen_df(network,gpd_bus_regions):
-    res_carriers_names = ["solar", "onwind", "offwind-ac", "offwind-dc", "hydro", "ror", "geothermal", "biomass"]
+    res_carriers_names = ["solar", "onwind", "offwind-ac", "offwind-dc", 
+        "hydro", "ror", "geothermal", "biomass"]
     network_carriers = list(network.generators.carrier.unique())#.remove("load")
     network_res_carriers = [x for x in res_carriers_names if x in network_carriers]
     # network_carriers replaced by network_res_carriers to focus on RES
     multi_index= pd.MultiIndex.from_product([network_res_carriers, selected_cols_gen],
-    names=['carrier','parameter'])
+        names=['carrier','parameter'])
     param_bus_value_df = pd.DataFrame( index=multi_index,columns=gpd_bus_regions.name)
     
     i_buses = network.buses_t.p.sum(axis=0).index
-    load_df = pd.DataFrame({"bus_load": network.buses_t.p.sum(axis=0), "name": network.buses_t.p.columns})
+    load_df = pd.DataFrame({"bus_load": network.buses_t.p.sum(axis=0), 
+        "name": network.buses_t.p.columns})
 
     for carrier_in_unique in network_res_carriers:
         i_buses = network.buses_t.p.sum(axis=0).index
 
-        generator_network=network.generators.copy()
+        generator_network = network.generators.copy()
+
         # carrier sorted value from generator_network
         i_carrier = generator_network["carrier"] == carrier_in_unique
         carrier_df = generator_network[i_carrier]
-        # calculate capacity factors
-        p_gen = network.generators_t.p[network.generators[i_carrier].index].mean(axis=0)
-        # TODO since p_nom_opt can be zero, there may be a better way to calculate cf       
+        i_gens_idx = generator_network[i_carrier].index
+
+        # capacity factors
+        p_gen = generator_network_t.p[i_gens_idx].mean(axis=0)     
         carrier_df["cf"] = 100 * (p_gen / generator_network[i_carrier].p_nom_opt)
+
+        # curtailment
+        carrier_df["crt"] = 100 * (
+            ((generator_network[i_carrier].p_nom_opt * generator_network_t.p_max_pu[i_gens_idx]) - 
+            generator_network_t.p[i_gens_idx])/
+            (generator_network[i_carrier].p_nom_opt * generator_network_t.p_max_pu[i_gens_idx])
+        ).mean()
+
+        # used potential
+        carrier_df["usdpt"] = 100 * (
+            (generator_network.p_nom_max[i_gens_idx] - generator_network[i_carrier].p_nom_opt)/
+            generator_network.p_nom_max[i_gens_idx]
+        ).mean()        
 
         # arranging according to geopandas bus regions
         temp_name_series = pd.Series([0]*len(gpd_bus_regions), index=gpd_bus_regions.name, name="bus")
