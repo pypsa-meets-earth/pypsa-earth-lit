@@ -71,8 +71,16 @@ with main_col:
         list(gen_df.keys()),
         format_func = scenario_formatter,
     )
+
+finest_resolution = helper.get_meta_df(selected_network)["scenario"]["opts"][0].split("L-")[1]
+finest_resolution_name = finest_resolution.split("H")[0] + "-hourly"
+
+upd_dict = {finest_resolution: finest_resolution_name}
+upd_dict.update(res_choices)
+
 with suppl_col:
-    choices = res_choices
+    #choices = res_choices
+    choices = upd_dict
     res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x], key="gen_res") 
 
 

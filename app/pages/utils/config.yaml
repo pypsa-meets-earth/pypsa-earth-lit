@@ -264,9 +264,8 @@ operation:
     # methanol: Methanol
     # oil: Liquid Hydrocarbons
   resolution:
-    # 3H: 3-hourly
     24H: daily
-    # 168H: weekly
+    168H: weekly
 
 scenarios:
   costs: Total System Costs (bn€/a)
