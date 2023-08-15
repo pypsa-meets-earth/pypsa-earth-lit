@@ -38,12 +38,19 @@ def main():
     df_techs = [tech_map[c] for c in df.columns]
     tech_colors = get_colors_map()
     plot_color = [tech_colors[c] for c in df_techs]
+
+    # needed to control markers size for the scatter
+    df["dummy_size"] = 1
+
     _, plot_col,_ = st.columns([1, 80, 1])
     with plot_col:
         if option == "Capacity Factor":
             st.plotly_chart(px.scatter(df, y=df.columns,
                 # TODO Would be nice to adjust markers
                 # size=[20],
+                size="dummy_size",
+                size_max=25,
+                opacity=0.9,
                 color_discrete_sequence=plot_color,
                 labels={
                     "value":get_stat_unit(option),
