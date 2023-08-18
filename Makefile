@@ -6,4 +6,4 @@ get_data:
 	echo "Download successful. Stored in tauritron-project/pypsa-earth"
 
 run_app:
-	streamlit run app/index.py
+	streamlit run app/Introduction.py
