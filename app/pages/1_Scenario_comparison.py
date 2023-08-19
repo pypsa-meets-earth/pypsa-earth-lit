@@ -137,11 +137,31 @@ def main():
         )
     st.markdown(fix_cursor_css, unsafe_allow_html=True)
     stat_table = helper.add_statistics(network_map[scenario])
+
+    th_props = [
+        ("font-size", "18px"),
+        ("color", data_color),
+        ("font-weight", "bold"),
+        ("text-align", "left")
+    ]
+    td_props = [
+        ("font-size", "18px"),
+        ("color", data_color)
+    ]    
+    styles = [
+        dict(selector="th", props=th_props),
+        dict(selector="td", props=td_props)
+    ]
+
+    df = (
+        stat_table.style
+        .format(precision=2, thousands=" ", decimal=".")
+        .set_properties().set_table_styles(styles)
+        )
+
     with table_col:
-        st.write(stat_table.style.format(precision=2, thousands=" ", decimal="."))          
-
-
-    st.header("Operation plots")    
+        # st.dataframe(stat_table.style.format(precision=2, thousands=" ", decimal="."))
+        st.table(df)     
 
     ##### second dropdown plotting n.carrier #####
     st.header("Operation plots")    
