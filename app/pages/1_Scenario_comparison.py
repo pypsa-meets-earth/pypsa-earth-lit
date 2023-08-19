@@ -7,6 +7,7 @@ import plotly.express as px
 import app.pages.utils.tools as tools
 import app.pages.utils.scenario_comparision_prerun as helper
 
+data_color = "#1B1212"
 # needed to change cursor mode of selectboxes from the default text mode
 fix_cursor_css = '''
     <style>
@@ -24,6 +25,41 @@ def get_carrier_map():
 
 def get_colors_map():
     return tools.config["tech_colors"]
+
+
+def adjust_plot_appearance(current_fig):
+    current_fig.update_layout(
+        font=dict(
+            family="PT Sans Narrow",
+            size=18
+        ),              
+        legend_font_color=data_color,
+        legend_font_size=18,
+        legend_title_font_color=data_color,
+        legend_title_font_size=18,
+        font_color=data_color
+    )
+    current_fig.update_xaxes(
+        tickangle=270,
+        tickfont=dict(
+            family="PT Sans Narrow",
+            color=data_color,
+            size=18
+        )
+    )
+    current_fig.update_yaxes(
+        title_font=dict(
+            family="PT Sans Narrow",
+            color=data_color,
+            size=18                    
+        ),
+        tickfont=dict(
+            family="PT Sans Narrow",
+            color=data_color,
+            size=18
+        )
+    )
+    return(current_fig)       
 
 def main():
     st.title("Scenario comparison")
@@ -67,6 +103,7 @@ def main():
                     "value":get_stat_unit(option),
                     "index":"scenarios"
                 }, title=option), use_cointainer_width=True
+            adjust_plot_appearance(current_fig=fig)
             )
         else:
             st.plotly_chart(px.bar(df, y=df.columns,
@@ -81,6 +118,7 @@ def main():
     #st.write(df)
 
     sc_names = list(network_map.keys())
+            adjust_plot_appearance(current_fig=fig)
 
     st.header("Network statistics")
 
@@ -127,6 +165,7 @@ def main():
                     "index":"scenarios"
                 }
         )
+            adjust_plot_appearance(current_fig=fig)
             st.plotly_chart(fig, use_container_width=True)
 
     elif option == "Optimal Capacity":
@@ -149,6 +188,7 @@ def main():
                     "index":"scenarios"
                 }
         )
+            adjust_plot_appearance(current_fig=fig) 
             st.plotly_chart(fig, use_container_width=True)
 
 
