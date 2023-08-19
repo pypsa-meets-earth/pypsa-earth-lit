@@ -7,6 +7,14 @@ import plotly.express as px
 import app.pages.utils.tools as tools
 import app.pages.utils.scenario_comparision_prerun as helper
 
+# needed to change cursor mode of selectboxes from the default text mode
+fix_cursor_css = '''
+    <style>
+        .stSelectbox:first-of-type > div[data-baseweb="select"] > div {
+            cursor: pointer;      
+        }            
+    </style>
+'''
 
 def get_stat_unit(param):
     return tools.config["statistics_param_units"][param]
@@ -27,6 +35,7 @@ def main():
 
     ###### first dropdown plotting n.statistics #####
     params = list(network_map.values())[0].statistics().columns
+        st.markdown(fix_cursor_css, unsafe_allow_html=True)
 
     st.header("Statistics plot")  
     option = st.selectbox(
@@ -81,6 +90,7 @@ def main():
             "Select scenario",
             sc_names,
         )
+    st.markdown(fix_cursor_css, unsafe_allow_html=True)
     stat_table = helper.add_statistics(network_map[scenario])
     with table_col:
         st.write(stat_table.style.format(precision=2, thousands=" ", decimal="."))          
@@ -93,6 +103,7 @@ def main():
         tools.config["second_param_units"]
     )
 
+    st.markdown(fix_cursor_css, unsafe_allow_html=True)    
     if option == "CO2 emissions":
         co2_df = helper.get_df_for_parameter(
             network_map,

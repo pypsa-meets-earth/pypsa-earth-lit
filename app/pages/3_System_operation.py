@@ -27,6 +27,15 @@ import hvplot.networkx as hvnx
 from shapely.geometry import Point, LineString, shape
 import datetime
 
+# needed to change cursor mode of selectboxes from the default text mode
+fix_cursor_css = '''
+    <style>
+        .stSelectbox:first-of-type > div[data-baseweb="select"] > div {
+            cursor: pointer;      
+        }            
+    </style>
+'''
+
 non_empth_links_keys=[param for param in helper.config["links_t_parameter"]]
 non_empth_loads_keys=[param for param in helper.config["loads_t_parameter"]]
 non_empth_stores_keys=[param for param in helper.config["stores_t_parameter"]]
@@ -71,6 +80,7 @@ with main_col:
         list(gen_df.keys()),
         format_func = scenario_formatter,
     )
+    st.markdown(fix_cursor_css, unsafe_allow_html=True)
 
 finest_resolution = helper.get_meta_df(selected_network)["scenario"]["opts"][0].split("L-")[1]
 finest_resolution_name = finest_resolution.split("H")[0] + "-hourly"
@@ -82,6 +92,7 @@ with suppl_col:
     #choices = res_choices
     choices = upd_dict
     res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x], key="gen_res") 
+    st.markdown(fix_cursor_css, unsafe_allow_html=True) 
 
 
 country_data=gen_df.get(selected_network)

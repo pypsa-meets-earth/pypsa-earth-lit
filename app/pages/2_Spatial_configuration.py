@@ -27,7 +27,14 @@ import networkx as nx
 import hvplot.networkx as hvnx
 from shapely.geometry import Point, LineString, shape
 
-
+# needed to change cursor mode of selectboxes from the default text mode
+fix_cursor_css = '''
+    <style>
+        .stSelectbox:first-of-type > div[data-baseweb="select"] > div {
+            cursor: pointer;      
+        }            
+    </style>
+'''
 
 data=helper.make_return_dict()
 st.title("Spatial configuration")
@@ -44,6 +51,7 @@ with main_col:
         list(data.keys()),
         format_func=scenario_formatter
     )
+st.markdown(fix_cursor_css, unsafe_allow_html=True)    
 
 country_data=data.get(selected_network)
 
@@ -84,6 +92,7 @@ with col1:
             key="colorpeth_param_carrier"
 
         )
+    st.markdown(fix_cursor_css, unsafe_allow_html=True)
     
     if(colorpeth_param=="Nothing"):
         plot_area=polygon_gpd.hvplot(
@@ -124,6 +133,7 @@ with col3:
             format_func = spatial_param_formatter,
            key="points_param_carrier"
         )
+    st.markdown(fix_cursor_css, unsafe_allow_html=True)
    
 
     if(points_param=="Nothing"):
@@ -180,9 +190,9 @@ with col2:
     line_option = st.selectbox(
             "Network", edge_params,
             format_func=  line_param_formatter,
-            key="line_option"
-            
+            key="line_option"            
         )
+    st.markdown(fix_cursor_css, unsafe_allow_html=True)
 
     if(line_option!="Nothing"):
         scale = pd.Series(nx.get_edge_attributes(G,line_option )).max() / 10
