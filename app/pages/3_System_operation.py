@@ -69,7 +69,7 @@ def get_carrier_map():
     return helper.config["carrier"]
 
 def get_colors_map():
-    return helper.config["tech_colors"]
+    return helper.config["tech_colors"]  
 
 carriers_map = get_carrier_map()
 tech_map = dict(map(reversed, carriers_map.items()))
@@ -91,12 +91,11 @@ upd_dict.update(res_choices)
 with suppl_col:
     #choices = res_choices
     choices = upd_dict
-    res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x], key="gen_res") 
+    res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x], key="gen_res")
     st.markdown(fix_cursor_css, unsafe_allow_html=True) 
 
 
 country_data=gen_df.get(selected_network)
-
 
 ##################### generators #####################
 # st.subheader("Generators plot is here.")

@@ -26,6 +26,8 @@ def get_carrier_map():
 def get_colors_map():
     return tools.config["tech_colors"]
 
+def scenario_formatter(scenario):
+    return tools.config["scenario_names"][scenario]
 
 def adjust_plot_appearance(current_fig):
     current_fig.update_layout(
@@ -65,7 +67,6 @@ def main():
     st.title("Scenario comparison")
 
     network_map = tools.get_network_map()
-
     carriers_map = get_carrier_map()
     tech_map = dict(map(reversed, carriers_map.items()))
 
@@ -93,41 +94,40 @@ def main():
 
     # needed to control markers size for the scatter
     df["dummy_size"] = 1
-
-    _, plot_col,_ = st.columns([1, 80, 1])
+    _, plot_col,_ = st.columns([1,80,1])
     with plot_col:
         if option == "Capacity Factor":
-            st.plotly_chart(px.scatter(df, y=df.columns,
-                # TODO Would be nice to adjust markers
-                # size=[20],
+            fig = px.scatter(df, y=df.columns,
                 size="dummy_size",
                 size_max=25,
                 opacity=0.9,
                 color_discrete_sequence=plot_color,
                 labels={
                     "value":get_stat_unit(option),
-                    "index":"scenarios"
-                }, title=option), use_cointainer_width=True
+                    "index":" ",
+                    "variable": "carriers"
+                },
+                title=" ")
             adjust_plot_appearance(current_fig=fig)
+            st.plotly_chart(fig,
+                use_cointainer_width=True
             )
         else:
-            st.plotly_chart(px.bar(df, y=df.columns,
+            fig = px.bar(df, y=df.columns,
                 color_discrete_sequence=plot_color,                    
                 labels={
                     "value":get_stat_unit(option),
-                    "index":"scenarios"
-                }, title=option),use_cointainer_width=True
-            ) 
-    
-    ## in table would be of interest for a selected parameter only
-    #st.write(df)
-
-    sc_names = list(network_map.keys())
+                    "index":" ",
+                    "variable": "carriers"
+                }, 
+                title=" ")
             adjust_plot_appearance(current_fig=fig)
+            st.plotly_chart(fig,
+                use_cointainer_width=True
+            )            
 
     st.header("Network statistics")
-
-    _, table_col, _ = st.columns([1, 50, 1])
+    _, table_col, _ = st.columns([2,60,20])
     with table_col:
         scenario = st.selectbox(
             "Select scenario:",
@@ -185,17 +185,18 @@ def main():
         tech_colors = get_colors_map()
         plot_color = [tech_colors[c] for c in df_techs]
 
-        _,plot_col,_ = st.columns([1,60,1])
+        _, plot_col, _ = st.columns([1,60,1])
 
         with plot_col:
             fig = px.bar(co2_df, y=co2_df.columns, 
-                title="CO2 emissions",
+                title=" ",
                 color_discrete_sequence=plot_color,
                 labels={
-                    "value":tools.config["second_param_units"][option],
-                    "index":"scenarios"
+                    "value": tools.config["second_param_units"][option],
+                    "index":" ",
+                    "variable": "carriers"
                 }
-        )
+            )
             adjust_plot_appearance(current_fig=fig)
             st.plotly_chart(fig, use_container_width=True)
 
@@ -211,14 +212,17 @@ def main():
         _,plot_col,_=st.columns([1,80,1])
 
         with plot_col:
-            fig = px.bar(gen_df, y=gen_df.columns, 
+            fig = px.bar(
+                gen_df, 
+                y=gen_df.columns, 
                 title="Optimal Capacity",
                 color_discrete_sequence=plot_color,
                 labels={
-                    "value":tools.config["second_param_units"][option],
-                    "index":"scenarios"
-                }
-        )
+                    "value": tools.config["second_param_units"][option],
+                    "index":" ",
+                    "variable": "carriers"
+                }  
+            )
             adjust_plot_appearance(current_fig=fig) 
             st.plotly_chart(fig, use_container_width=True)
 
