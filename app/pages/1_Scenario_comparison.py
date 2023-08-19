@@ -71,13 +71,18 @@ def main():
 
     ###### first dropdown plotting n.statistics #####
     params = list(network_map.values())[0].statistics().columns
+    st.header("Statistics plot")
+    _, select_col, _ = st.columns([2,60,20])
+
+
+    with select_col: 
+        option = st.selectbox(
+            "Select metric",
+            params,
+            help="You can select any parameter of a PyPSA Network Statistics table"
+        )
         st.markdown(fix_cursor_css, unsafe_allow_html=True)
 
-    st.header("Statistics plot")  
-    option = st.selectbox(
-        "Select your metric",
-        params,
-    )
     df = helper.get_df_for_parameter(
         network_map, option, helper.add_values_for_statistics, helper.get_stats_col_names
     )
@@ -125,8 +130,10 @@ def main():
     _, table_col, _ = st.columns([1, 50, 1])
     with table_col:
         scenario = st.selectbox(
-            "Select scenario",
-            sc_names,
+            "Select scenario:",
+            list(network_map.keys()),
+            format_func=scenario_formatter,
+            help="You can choise between available scenarios"
         )
     st.markdown(fix_cursor_css, unsafe_allow_html=True)
     stat_table = helper.add_statistics(network_map[scenario])
@@ -135,12 +142,16 @@ def main():
 
 
     st.header("Operation plots")    
-    ##### second dropdown plotting n.carrier #####
-    option = st.selectbox(
-        "Which plot would you like to see?",
-        tools.config["second_param_units"]
-    )
 
+    ##### second dropdown plotting n.carrier #####
+    st.header("Operation plots")    
+    _, table_col, _ = st.columns([2,60,20])
+    with table_col:    
+        option = st.selectbox(
+            "Which plot would you like to see?",
+            tools.config["second_param_units"],
+            help="Currently, you can choise between CO2 emissions and Optimal Capacity plots. More plots will follow soon"
+        )
     st.markdown(fix_cursor_css, unsafe_allow_html=True)    
     if option == "CO2 emissions":
         co2_df = helper.get_df_for_parameter(
