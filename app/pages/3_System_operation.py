@@ -147,7 +147,17 @@ ylab = helper.config["gen_t_parameter"]["p"]["nice_name"] + " ["+str(helper.conf
 gen_area_plot = gen_df.hvplot.area(**kwargs, 
     group_label=helper.config["gen_t_parameter"]["p"]["legend_title"],
     color=plot_color) 
-gen_area_plot = gen_area_plot.opts(xlabel="", ylabel=ylab)
+gen_area_plot = gen_area_plot.opts(
+    xlabel="",
+    ylabel=ylab,
+    fontsize={
+        "title":18,
+        "legend":18,
+        "labels":18, 
+        "xticks":18, 
+        "yticks":18,
+    }
+)
 s=hv.render(gen_area_plot, backend='bokeh')
 
 with gen_plot_col:
@@ -212,9 +222,23 @@ plot_color = [tech_colors[c] for c in demand_df.columns]
 ylab = helper.config["links_t_parameter"]["p0"]["nice_name"] + " ["+str(helper.config["links_t_parameter"]["p0"]["unit"] + "]")
 
 with links_plot_col:
-    demand_area_plot=demand_df.hvplot.area(**kwargs, ylabel=ylab,
+    demand_area_plot=demand_df.hvplot.area(
+        **kwargs,
+        ylabel=ylab,
         group_label=helper.config["links_t_parameter"]["p0"]["legend_title"],
-        color = plot_color)  
+        color = plot_color
+        )
+    demand_area_plot = demand_area_plot.opts(
+        xlabel="",
+        ylabel=ylab,
+        fontsize={
+            "title":18,
+            "legend":18,
+            "labels":18, 
+            "xticks":18, 
+            "yticks":18,
+        }
+    )         
     s2=hv.render(demand_area_plot, backend='bokeh')
     st.bokeh_chart(s2, use_container_width=True)
 
