@@ -73,12 +73,13 @@ def get_co2_col_names(n):
 def get_gen_col_names(n):
     return n.generators.groupby(by="carrier")["p_nom"].sum().index.array
 
-
+################
 def _get_all_columns(network_map, get_cols_fn):
     names = set()
     for n in network_map.values():
         names = names | set(get_cols_fn(n))
     return names
+
 def adjust_plot_appearance(current_fig):
     current_fig.update_layout(
         font=dict(

@@ -181,7 +181,7 @@ def main():
             fig = px.bar(
                 gen_df, 
                 y=gen_df.columns, 
-                title="Optimal Capacity",
+                title=" ",
                 color_discrete_sequence=plot_color,
                 labels={
                     "value": tools.config["second_param_units"][option],
