@@ -2,8 +2,8 @@ tiles: "OSM"
 
 tech_colors:
   # wind
-  onwind: "#235ebc"
-  onshore wind: "#235ebc"
+  onwind: "#3458ab"
+  onshore wind: "#3458ab"
   offwind: "#6895dd"
   offshore wind: "#6895dd"
   offwind-ac: "#6895dd"
@@ -18,9 +18,10 @@ tech_colors:
   hydroelectricity: "#298c81"
   PHS: "#51dbcc"
   wave: "#a7d4cf"
+  geothermal: "gray"
   # solar
-  solar: "#f9d002"
-  solar PV: "#f9d002"
+  solar: "#dcbd1f"
+  solar PV: "#dcbd1f"
   solar thermal: "#ffbf2b"
   solar rooftop: "#ffea80"
   # gas
@@ -73,6 +74,8 @@ tech_colors:
   solid biomass CHP CC: "#aeb841"
   solid biomass for industry co2 from atmosphere: "#736412"
   solid biomass for industry co2 to stored: "#47411c"
+  # demand
+  load: "#c94a4a"
   # power transmission
   lines: "#6c9459"
   transmission lines: "#6c9459"
@@ -128,15 +131,15 @@ tech_colors:
   # hydrogen
   H2 for industry: "#f073da"
   H2 for shipping: "#ebaee0"
-  H2: "#bf13a0"
-  hydrogen: "#bf13a0"
+  H2: "#a72b91"
+  hydrogen: "#a72b91"
   SMR: "#870c71"
   SMR CC: "#4f1745"
   steam methane reforming: "#870c71"
   steam methane reforming CC: "#4f1745"
   H2 liquefaction: "#d647bd"
-  hydrogen storage: "#bf13a0"
-  H2 storage: "#bf13a0"
+  hydrogen storage: "#a72b91"
+  H2 storage: "#a72b91"
   land transport fuel cell: "#6b3161"
   H2 pipeline: "#f081dc"
   H2 pipeline retrofitted: "#ba99b5"
@@ -261,9 +264,8 @@ operation:
     # methanol: Methanol
     # oil: Liquid Hydrocarbons
   resolution:
-    # 3H: 3-hourly
     24H: daily
-    # 168H: weekly
+    168H: weekly
 
 scenarios:
   costs: Total System Costs (bn€/a)
@@ -290,15 +292,18 @@ scenario_names:
 ########## spatial parameters
 
 spatial_parameters:
+  p_nom_opt:
+    nice_name: Capacity
+    unit: (MW)  
   cf:
     nice_name: Capacity Factor
-    unit: "%" 
-  p_nom:
-    nice_name: Optimal Nominal Power
-    unit: (MW)
-  p_nom_opt:
-    nice_name: Original Nominal Power
-    unit: (MW)
+    unit: "%"
+  crt:
+    nice_name: Curtailment
+    unit: "%"
+  usdpt:
+    nice_name: Used Potential
+    unit: "%"       
   marginal_cost:
     nice_name: Cost During Production
     unit: (euro/MWh)
@@ -391,11 +396,13 @@ loads_t_parameter:
   p: 
     nice_name: Demand
     unit: MW
+    legend_title: " "
 
 stores_t_parameter:
   p: 
     nice_name: Load State
     unit: MW
+    legend_title: " "
 
 links_t_parameter:
   p0:

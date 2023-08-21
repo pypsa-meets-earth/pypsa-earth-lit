@@ -27,7 +27,14 @@ import networkx as nx
 import hvplot.networkx as hvnx
 from shapely.geometry import Point, LineString, shape
 
-
+# needed to change cursor mode of selectboxes from the default text mode
+fix_cursor_css = '''
+    <style>
+        .stSelectbox:first-of-type > div[data-baseweb="select"] > div {
+            cursor: pointer;      
+        }            
+    </style>
+'''
 
 data=helper.make_return_dict()
 st.title("Spatial configuration")
@@ -42,8 +49,10 @@ with main_col:
     selected_network = st.selectbox(
         "Select which scenario's plot you want to see :",
         list(data.keys()),
-        format_func=scenario_formatter
+        format_func=scenario_formatter,
+        help="You can choose between available scenarios"
     )
+st.markdown(fix_cursor_css, unsafe_allow_html=True)    
 
 country_data=data.get(selected_network)
 
@@ -81,14 +90,16 @@ with col1:
     colorpeth_param = st.selectbox(
             "Regions", colorpeth_nodes_param, 
             format_func = spatial_param_formatter,
-            key="colorpeth_param_carrier"
+            key="colorpeth_param_carrier",
+            help="You can pick a parameter to be shown for each bus region of the model"
 
         )
+    st.markdown(fix_cursor_css, unsafe_allow_html=True)
     
     if(colorpeth_param=="Nothing"):
         plot_area=polygon_gpd.hvplot(
         geo=True,
-        tiles='StamenWatercolor',
+        tiles="StamenWatercolor",
         color="white",
         alpha=0.8, 
         width=800, height=800).opts(**graph_opts)
@@ -100,8 +111,8 @@ with col1:
         # adding data from values df to polygon_gpd
         if(colorpeth_param not in polygon_gpd.columns):
             selecter_col_data=map_points_df.loc[
-            (colorpeth_param_carrier,colorpeth_param_value)].values.tolist()
-            polygon_gpd.insert(loc=0,column=colorpeth_param,value=selecter_col_data)
+            (colorpeth_param_carrier, colorpeth_param_value)].values.tolist()
+            polygon_gpd.insert(loc=0, column=colorpeth_param, value=selecter_col_data)
 
 
         kargs=dict(
@@ -113,7 +124,7 @@ with col1:
 
         plot_area=polygon_gpd.hvplot(
         geo=True,
-        tiles='StamenWatercolor',
+        tiles="StamenWatercolor",
         alpha=0.8, 
         width=800, height=800,
         **kargs).opts(**graph_opts)
@@ -122,8 +133,10 @@ with col3:
     points_param = st.selectbox(
             "Nodes", colorpeth_nodes_param,
             format_func = spatial_param_formatter,
-           key="points_param_carrier"
+            key="points_param_carrier",
+            help="You can pick a parameter to be shown for each node of the model"
         )
+    st.markdown(fix_cursor_css, unsafe_allow_html=True)
    
 
     if(points_param=="Nothing"):
@@ -143,13 +156,12 @@ with col3:
             selecter_col_data=map_points_df.loc[
             (points_param_carrier
             ,points_param_value) ].values.tolist()
-            points_gpd.insert(loc=0,column=points_param,value=selecter_col_data)
+            points_gpd.insert(loc=0, column=points_param, value=selecter_col_data)
             # adding size factor
             scale = pd.Series(points_gpd[points_param]).max() 
             temp_size=pd.DataFrame()
             temp_size["scale"]=(2+points_gpd[points_param]/scale)*500
-            points_gpd.insert(loc=0,column=points_param_size,value=temp_size["scale"].values.tolist())
-
+            points_gpd.insert(loc=0,column=points_param_size, value=temp_size["scale"].values.tolist())
 
         plot_ponts = points_gpd.hvplot(
                 geo=True,
@@ -179,23 +191,24 @@ with col2:
 
     line_option = st.selectbox(
             "Network", edge_params,
-            format_func=  line_param_formatter,
-            key="line_option"
-            
+            format_func = line_param_formatter,
+            key="line_option",
+            help="You can pick a parameter to be shown for each line of the model"            
         )
+    st.markdown(fix_cursor_css, unsafe_allow_html=True)
 
     if(line_option!="Nothing"):
         scale = pd.Series(nx.get_edge_attributes(G,line_option )).max() / 10
     
-        network_lines_plot=hvnx.draw_networkx_edges(G, pos=pos,edge_color=line_option,responsive=True,
-            inspection_policy="edges",node_color='#A0C0E2'
+        network_lines_plot=hvnx.draw_networkx_edges(G, pos=pos, edge_color=line_option, responsive=True,
+            inspection_policy="edges", node_color='#A0C0E2'
             ,geo=True
             ,edge_width=hv.dim(line_option)/scale ).opts(**graph_opts)
 
 
 if (line_option=="Nothing"):
-    combined_plot=hv.render(plot_area*plot_ponts,backend='bokeh')
+    combined_plot=hv.render(plot_area*plot_ponts, backend='bokeh')
 else:
-    combined_plot=hv.render(plot_area*plot_ponts*network_lines_plot,backend='bokeh')
+    combined_plot=hv.render(plot_area*plot_ponts*network_lines_plot, backend='bokeh')    
 
 st.bokeh_chart(combined_plot, use_container_width=True)

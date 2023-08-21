@@ -39,18 +39,21 @@ def get_unique_carriers(df):
 
     return list(set(split_cols))
 
+def get_meta_df(network_key):
+    network=pypsa_network_map.get(network_key)
+    return network.meta
 
-def get_gen_t_df(pypsa_network,gen_t_key):
-    gen_t_df=pypsa_network.generators_t[gen_t_key]
-    unique_carriers=get_unique_carriers(gen_t_df)
-    unique_carriers_nice_names=[config["carrier"][carrier] for carrier in unique_carriers]
-    resultant_df=pd.DataFrame(0,columns=unique_carriers_nice_names,index=gen_t_df.index)
+def get_gen_t_df(pypsa_network, gen_t_key):
+    gen_t_df = pypsa_network.generators_t[gen_t_key]
+    unique_carriers = get_unique_carriers(gen_t_df)
+    unique_carriers_nice_names = [config["carrier"][carrier] for carrier in unique_carriers]
+    resultant_df = pd.DataFrame(0,columns=unique_carriers_nice_names, index=gen_t_df.index)
 
     for carrier in unique_carriers:
         for bus_carrier in gen_t_df.columns:
             if carrier in bus_carrier.split(" ") :
-                nice_name=config["carrier"][carrier]
-                resultant_df[nice_name]+=gen_t_df[bus_carrier]
+                nice_name = config["carrier"][carrier]
+                resultant_df[nice_name] += gen_t_df[bus_carrier]
     
     return resultant_df
     
