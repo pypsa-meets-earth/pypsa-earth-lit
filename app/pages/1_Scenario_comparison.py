@@ -29,40 +29,6 @@ def get_colors_map():
 def scenario_formatter(scenario):
     return tools.config["scenario_names"][scenario]
 
-def adjust_plot_appearance(current_fig):
-    current_fig.update_layout(
-        font=dict(
-            family="PT Sans Narrow",
-            size=18
-        ),              
-        legend_font_color=data_color,
-        legend_font_size=18,
-        legend_title_font_color=data_color,
-        legend_title_font_size=18,
-        font_color=data_color
-    )
-    current_fig.update_xaxes(
-        tickangle=270,
-        tickfont=dict(
-            family="PT Sans Narrow",
-            color=data_color,
-            size=18
-        )
-    )
-    current_fig.update_yaxes(
-        title_font=dict(
-            family="PT Sans Narrow",
-            color=data_color,
-            size=18                    
-        ),
-        tickfont=dict(
-            family="PT Sans Narrow",
-            color=data_color,
-            size=18
-        )
-    )
-    return(current_fig)       
-
 def main():
     st.title("Scenario comparison")
 
@@ -108,7 +74,7 @@ def main():
                     "variable": "carriers"
                 },
                 title=" ")
-            adjust_plot_appearance(current_fig=fig)
+            helper.adjust_plot_appearance(current_fig=fig)
             st.plotly_chart(fig,
                 use_cointainer_width=True
             )
@@ -121,7 +87,7 @@ def main():
                     "variable": "carriers"
                 }, 
                 title=" ")
-            adjust_plot_appearance(current_fig=fig)
+            helper.adjust_plot_appearance(current_fig=fig)
             st.plotly_chart(fig,
                 use_cointainer_width=True
             )            
@@ -197,7 +163,7 @@ def main():
                     "variable": "carriers"
                 }
             )
-            adjust_plot_appearance(current_fig=fig)
+            helper.adjust_plot_appearance(current_fig=fig)
             st.plotly_chart(fig, use_container_width=True)
 
     elif option == "Optimal Capacity":
@@ -223,7 +189,7 @@ def main():
                     "variable": "carriers"
                 }  
             )
-            adjust_plot_appearance(current_fig=fig) 
+            helper.adjust_plot_appearance(current_fig=fig) 
             st.plotly_chart(fig, use_container_width=True)
 
 

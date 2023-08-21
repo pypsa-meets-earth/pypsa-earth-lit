@@ -1,6 +1,8 @@
 import app.pages.utils.tools as tools
 import pandas as pd
 
+data_color = "#1B1212"
+
 def get_df_for_parameter(network_map, parameter, get_values_fn, get_cols_fn):
     all_column_names = _get_all_columns(network_map, get_cols_fn)
     all_column_names.discard("load")
@@ -77,3 +79,36 @@ def _get_all_columns(network_map, get_cols_fn):
     for n in network_map.values():
         names = names | set(get_cols_fn(n))
     return names
+def adjust_plot_appearance(current_fig):
+    current_fig.update_layout(
+        font=dict(
+            family="PT Sans Narrow",
+            size=18
+        ),              
+        legend_font_color=data_color,
+        legend_font_size=18,
+        legend_title_font_color=data_color,
+        legend_title_font_size=18,
+        font_color=data_color
+    )
+    current_fig.update_xaxes(
+        tickangle=270,
+        tickfont=dict(
+            family="PT Sans Narrow",
+            color=data_color,
+            size=18
+        )
+    )
+    current_fig.update_yaxes(
+        title_font=dict(
+            family="PT Sans Narrow",
+            color=data_color,
+            size=18                    
+        ),
+        tickfont=dict(
+            family="PT Sans Narrow",
+            color=data_color,
+            size=18
+        )
+    )
+    return(current_fig)   
