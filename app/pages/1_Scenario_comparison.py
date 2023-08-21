@@ -59,10 +59,10 @@ def main():
     plot_color = [tech_colors[c] for c in df_techs]
 
     # needed to control markers size for the scatter
-    df["dummy_size"] = 1
     _, plot_col,_ = st.columns([1,80,1])
     with plot_col:
         if option == "Capacity Factor":
+            df["dummy_size"] = 1
             fig = px.scatter(df, y=df.columns,
                 size="dummy_size",
                 size_max=25,
