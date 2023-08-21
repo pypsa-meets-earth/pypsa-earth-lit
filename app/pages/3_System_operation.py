@@ -220,7 +220,7 @@ demand_df["battery"]=stores_df[battery_cols].sum(axis=1)
 #             key="links_date"
 #         )
 
-links_df=links_df.loc[values[0]:values[1]].resample(res).mean()
+demand_df=demand_df.loc[values[0]:values[1]].resample(res).mean()
 
 tech_colors = get_colors_map()
 plot_color = [tech_colors[c] for c in demand_df.columns]
