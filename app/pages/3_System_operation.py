@@ -79,6 +79,7 @@ with main_col:
         "Select which scenario's plot you want to see :",
         list(gen_df.keys()),
         format_func = scenario_formatter,
+        help="You can choose between available scenarios"
     )
     st.markdown(fix_cursor_css, unsafe_allow_html=True)
 
@@ -91,7 +92,13 @@ upd_dict.update(res_choices)
 with suppl_col:
     #choices = res_choices
     choices = upd_dict
-    res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x], key="gen_res")
+    res = st.selectbox(
+        "Resolution",
+        choices,
+        format_func=lambda x: choices[x], 
+        key="gen_res",
+        help="You can choose a resolution for time aggregation applied for a plot"
+    )
     st.markdown(fix_cursor_css, unsafe_allow_html=True) 
 
 

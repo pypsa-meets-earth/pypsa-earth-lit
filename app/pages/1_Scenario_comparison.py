@@ -46,7 +46,7 @@ def main():
         option = st.selectbox(
             "Select metric",
             params,
-            help="You can select any parameter of a PyPSA Network Statistics table"
+            help="You can select any parameter from PyPSA Network Statistics table"
         )
         st.markdown(fix_cursor_css, unsafe_allow_html=True)
 
@@ -99,7 +99,7 @@ def main():
             "Select scenario:",
             list(network_map.keys()),
             format_func=scenario_formatter,
-            help="You can choise between available scenarios"
+            help="You can choose between available scenarios"
         )
     st.markdown(fix_cursor_css, unsafe_allow_html=True)
     stat_table = helper.add_statistics(network_map[scenario])
@@ -136,7 +136,7 @@ def main():
         option = st.selectbox(
             "Which plot would you like to see?",
             tools.config["second_param_units"],
-            help="Currently, you can choise between CO2 emissions and Optimal Capacity plots. More plots will follow soon"
+            help="Currently, you can choose between CO2 emissions and Optimal Capacity plots. More options will follow soon"
         )
     st.markdown(fix_cursor_css, unsafe_allow_html=True)    
     if option == "CO2 emissions":

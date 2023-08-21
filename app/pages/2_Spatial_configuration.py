@@ -49,7 +49,8 @@ with main_col:
     selected_network = st.selectbox(
         "Select which scenario's plot you want to see :",
         list(data.keys()),
-        format_func=scenario_formatter
+        format_func=scenario_formatter,
+        help="You can choose between available scenarios"
     )
 st.markdown(fix_cursor_css, unsafe_allow_html=True)    
 
@@ -89,7 +90,8 @@ with col1:
     colorpeth_param = st.selectbox(
             "Regions", colorpeth_nodes_param, 
             format_func = spatial_param_formatter,
-            key="colorpeth_param_carrier"
+            key="colorpeth_param_carrier",
+            help="You can pick a parameter to be shown for each bus region of the model"
 
         )
     st.markdown(fix_cursor_css, unsafe_allow_html=True)
@@ -131,7 +133,8 @@ with col3:
     points_param = st.selectbox(
             "Nodes", colorpeth_nodes_param,
             format_func = spatial_param_formatter,
-           key="points_param_carrier"
+           key="points_param_carrier",
+           help="You can pick a parameter to be shown for each node of the model"
         )
     st.markdown(fix_cursor_css, unsafe_allow_html=True)
    
@@ -190,7 +193,8 @@ with col2:
     line_option = st.selectbox(
             "Network", edge_params,
             format_func=  line_param_formatter,
-            key="line_option"            
+            key="line_option",
+            help="You can pick a parameter to be shown for each line of the model"            
         )
     st.markdown(fix_cursor_css, unsafe_allow_html=True)
 
