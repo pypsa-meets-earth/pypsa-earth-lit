@@ -396,11 +396,13 @@ loads_t_parameter:
   p: 
     nice_name: Demand
     unit: MW
+    legend_title: " "
 
 stores_t_parameter:
   p: 
     nice_name: Load State
     unit: MW
+    legend_title: " "
 
 links_t_parameter:
   p0:
