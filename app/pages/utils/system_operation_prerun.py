@@ -136,7 +136,7 @@ def get_links_df(pypsa_network, pypsa_component, component_key):
 #non_empth_stores_keys=[param for param in config["stores_t_parameter"]]
 
 # @st.cache_resource
-def get_links_t_dict(component_key, component_keys):
+def get_components_t_dict(component_key, component_keys):
     result={}
 
     for network_key in pypsa_network_map.keys():
