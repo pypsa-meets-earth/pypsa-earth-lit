@@ -1,5 +1,7 @@
 tiles: "OSM"
 
+data_dir: "/Users/ekaterina/Documents/_github_/pypsa-africa-aux/pypsa-earth-lit"
+
 tech_colors:
   # wind
   onwind: "#3458ab"
@@ -90,6 +92,8 @@ tech_colors:
   agriculture: "#494778"
   # battery + EVs
   battery: "#ace37f"
+  pbattery: "#ace37f"
+  nbattery: "#ace37f"
   battery storage: "#ace37f"
   home battery: "#80c944"
   home battery storage: "#80c944"
@@ -132,6 +136,8 @@ tech_colors:
   H2 for industry: "#f073da"
   H2 for shipping: "#ebaee0"
   H2: "#a72b91"
+  pH2: "#a72b91"
+  nH2: "#a72b91"   
   hydrogen: "#a72b91"
   SMR: "#870c71"
   SMR CC: "#4f1745"

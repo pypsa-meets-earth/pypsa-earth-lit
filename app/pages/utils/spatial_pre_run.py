@@ -14,7 +14,7 @@ config=tools.config
 
 @st.cache_resource
 def get_onshore_regions():
-    RESULTS_DIR=os.path.join("../pypsa-earth","resources")
+    RESULTS_DIR=os.path.join(config["data_dir"], "resources")
     name_geo_dict = {}
     for dir in os.listdir(RESULTS_DIR):
         entry = pathlib.Path(RESULTS_DIR, dir)

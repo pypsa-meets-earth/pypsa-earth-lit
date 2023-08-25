@@ -42,9 +42,8 @@ non_empth_stores_keys=[param for param in helper.config["stores_t_parameter"]]
 
 gen_df = helper.get_gen_t_dict()
 storage_df = helper.get_storage_t_dict()
-links_df = helper.get_links_t_dict("links_t", non_empth_links_keys)
-loads_df = helper.get_links_t_dict("loads_t", non_empth_loads_keys)
-stores_df = helper.get_links_t_dict("stores_t", non_empth_stores_keys)
+loads_df = helper.get_components_t_dict("loads_t", non_empth_loads_keys)
+stores_df = helper.get_components_t_dict("stores_t", non_empth_stores_keys)
 
 res_choices = helper.config["operation"]["resolution"]
 
@@ -55,7 +54,8 @@ kwargs = dict(
         width=800,
         height=550,
         hover=False,
-        legend='top'
+        legend="right",
+        alpha=0.8
     )
 plot_font_dict = dict(
     title=18,
@@ -113,52 +113,27 @@ country_data=gen_df.get(selected_network)
 
 
 ##################### generators #####################
-# _, gen_param_col, _, res_param_col,_ ,date_range_param, _ = st.columns([1,20,1,20,1,50,1])
-_, date_range_param, _ = st.columns([1, 50, 1])
-_, gen_plot_col, _ = st.columns([1, 80, 1])
-
 gen_df=country_data["p"].drop("Load", axis=1, errors="ignore")
 
+_, date_range_param, _ = st.columns([1, 50, 1])
 with date_range_param:
     min_index=gen_df.index[0]
     max_index=gen_df.index[-1]
     min_value = datetime.datetime(min_index.year, min_index.month, min_index.day)
     max_value = datetime.datetime(max_index.year, max_index.month, max_index.day)
     values = st.slider(
-            'Select a range of values',
+            "Select a range of values",
             min_value, max_value, (min_value, max_value),
             # step=datetime.timedelta(hours=int(res[:-1])),
             format="D MMM, HH:mm",
-            label_visibility='hidden',
+            label_visibility="hidden",
             key="gen_date"
         )
 
-gen_df = gen_df.loc[values[0]:values[1]].resample(res).mean()
-
-df_techs = [tech_map[c] for c in gen_df.columns]
-plot_color = [tech_colors[c] for c in df_techs]
-ylab = helper.config["gen_t_parameter"]["p"]["nice_name"] + " ["+str(helper.config["gen_t_parameter"]["p"]["unit"] + "]")
-
-gen_area_plot = gen_df.hvplot.area(
-    **kwargs,
-    ylabel=ylab, 
-    group_label=helper.config["gen_t_parameter"]["p"]["legend_title"],
-    color=plot_color) 
-gen_area_plot = gen_area_plot.opts(
-    fontsize=plot_font_dict
-)
-s=hv.render(gen_area_plot, backend='bokeh')
-
-with gen_plot_col:
-    st.bokeh_chart(s, use_container_width=True)
-
-
 ##################### demand #####################
-links_country_data=links_df.get(selected_network)
 loads_country_data=loads_df.get(selected_network)
 stores_country_data=stores_df.get(selected_network)
 
-links_df = links_country_data["p0"]
 loads_df = loads_country_data["p"]
 stores_df = stores_country_data["p"]
 
@@ -170,70 +145,67 @@ demand_df=pd.DataFrame({"load": loads_df.sum(axis=1)})
 demand_df["H2"]=stores_df[h2_cols].sum(axis=1)
 demand_df["battery"]=stores_df[battery_cols].sum(axis=1)
 
-demand_df=demand_df.loc[values[0]:values[1]].resample(res).mean()
+demand_df["load"] = demand_df["load"] * (-1)
 
-plot_color = [tech_colors[c] for c in demand_df.columns]
-ylab = helper.config["loads_t_parameter"]["p"]["nice_name"] + " ["+str(helper.config["loads_t_parameter"]["p"]["unit"] + "]")
+demand_df["pbattery"] = 0
+demand_df["nbattery"] = 0
+demand_df.loc[demand_df['battery'] > 0, "pbattery"] = demand_df["battery"]
+demand_df.loc[demand_df['battery'] < 0, "nbattery"] = demand_df["battery"]
 
-_, links_plot_col, _ = st.columns([1, 80, 1])
-with links_plot_col:
-    demand_area_plot=demand_df.hvplot.area(
+demand_df["pH2"] = 0
+demand_df["nH2"] = 0
+demand_df.loc[demand_df['H2'] > 0, "pH2"] = demand_df["H2"]
+demand_df.loc[demand_df['H2'] < 0, "nH2"] = demand_df["H2"]
+
+##################### supply-demand balanse #####################
+
+# ensure consistency of columns naming for generation and demand
+gen_df.columns = [tech_map[c] for c in gen_df.columns]
+
+balance_df = (
+    pd.concat([gen_df, demand_df], axis=1)
+    .drop("battery", axis=1)
+    .drop("H2", axis=1)
+    .drop("nH2", axis=1)
+    .drop("load", axis=1)
+)
+
+dem_balance_df = (
+    demand_df
+    .drop("battery", axis=1)
+    .drop("H2", axis=1)
+    .drop("pH2", axis=1)
+)
+
+balance_aggr=balance_df.loc[values[0]:values[1]].resample(res).mean()
+dem_balance_aggr=dem_balance_df.loc[values[0]:values[1]].resample(res).mean()
+
+_, balanse_plot_col, _ = st.columns([1, 80, 1])
+
+plot_color = [tech_colors[c] for c in balance_aggr.columns]
+with balanse_plot_col:
+    balanse_area_plot=balance_aggr.hvplot.area(
         **kwargs,
-        ylabel=ylab,
-        group_label=helper.config["loads_t_parameter"]["p"]["legend_title"],
+        ylabel="Supply [MW]",
+        #group_label=helper.config["loads_t_parameter"]["p"]["legend_title"],
         color = plot_color
         )
-    demand_area_plot = demand_area_plot.opts(
+    balanse_area_plot = balanse_area_plot.opts(
         fontsize=plot_font_dict
     )         
-    s2=hv.render(demand_area_plot, backend='bokeh')
+    s2=hv.render(balanse_area_plot, backend='bokeh')
     st.bokeh_chart(s2, use_container_width=True)
 
-
-# ##################### storage #####################
-
-# st.subheader("Storage plot is here.")
-
-# _, storage_param_col,_,res_param_col,_,date_range_param, _ = st.columns([1,20,1,20,1,50,1])
-# _, storage_plot_col, _ = st.columns([1,80,1])
-
-# storage_country_data=storage_df.get(selected_network)
-
-# def storage_formatter(storage):
-#     return helper.config["storage_t_parameter"][storage]["nice_name"] + " "+helper.config["storage_t_parameter"][storage]["unit"]
-
-# with storage_param_col:
-#     selected_storage = st.selectbox(
-#         "options",
-#         list(storage_country_data.keys()),
-#         format_func=storage_formatter
-#     )
-
-# storage_df=storage_country_data[selected_storage]
-
-# with res_param_col:
-#     choices = res_choices
-#     res = st.selectbox("Resolution", choices, format_func=lambda x: choices[x],key="storage_res")
-
-# with date_range_param:
-#     min_index=storage_df.index[0]
-#     max_index=storage_df.index[-1]
-#     min_value = datetime.datetime(min_index.year, min_index.month, min_index.day,max_index.hour,max_index.minute)
-#     max_value = datetime.datetime(max_index.year, max_index.month, max_index.day,max_index.hour,max_index.minute)
-#     values = st.slider(
-#             'Select a range of values',
-#             min_value, max_value, (min_value, max_value),
-#             # step=datetime.timedelta(hours=int(res[:-1])),
-#             format="D MMM, HH:mm",
-#             label_visibility='hidden',
-#             key="storage_date"
-#         )
-
-# storage_df=storage_df.loc[values[0]:values[1]].resample(res).mean()
-
-# with storage_plot_col:
-#     storage_area_plot=storage_df.hvplot.area(**kwargs,
-#     ylabel=helper.config["storage_t_parameter"][selected_storage]["unit"],
-#     group_label=helper.config["storage_t_parameter"][selected_storage]["legend_title"])
-#     s=hv.render(storage_area_plot,backend='bokeh')
-#     st.bokeh_chart(s, use_container_width=True)
+plot_color = [tech_colors[c] for c in dem_balance_aggr.columns]
+with balanse_plot_col:
+    dem_balanse_area_plot=dem_balance_aggr.hvplot.area(
+        **kwargs,
+        ylabel="Demand [MW]",
+        #group_label=helper.config["loads_t_parameter"]["p"]["legend_title"],
+        color = plot_color
+        )
+    dem_balanse_area_plot = dem_balanse_area_plot.opts(
+        fontsize=plot_font_dict
+    )         
+    s2=hv.render(dem_balanse_area_plot, backend='bokeh')
+    st.bokeh_chart(s2, use_container_width=True)

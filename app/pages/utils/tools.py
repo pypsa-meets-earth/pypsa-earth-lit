@@ -15,7 +15,7 @@ config=open_yaml_file("app/pages/utils/config.yaml")
 
 @st.cache_resource
 def get_network_map():
-    RESULTS_DIR = pathlib.Path("../pypsa-earth", "results")
+    RESULTS_DIR = pathlib.Path(config["data_dir"], "results")
     networks = {}
     for dir in os.listdir(RESULTS_DIR):
         entry = pathlib.Path(RESULTS_DIR, dir)
