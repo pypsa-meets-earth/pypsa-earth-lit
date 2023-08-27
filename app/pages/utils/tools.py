@@ -3,6 +3,7 @@ import pathlib
 import streamlit as st
 import pypsa
 import yaml
+import streamlit as st
 
 # @st.cache_resource
 def open_yaml_file(config_file):
@@ -13,13 +14,14 @@ def open_yaml_file(config_file):
 config=open_yaml_file("app/pages/utils/config.yaml")
 
 
-@st.cache_resource
+# @st.cache_resource
 def get_network_map():
     RESULTS_DIR = pathlib.Path(config["data_dir"], "results")
     networks = {}
     for dir in os.listdir(RESULTS_DIR):
         entry = pathlib.Path(RESULTS_DIR, dir)
-        if not entry.is_dir():
+        
+        if not entry.is_dir() or dir not in config["scenario_names"]:
             continue
 
         for dir_child in os.listdir(pathlib.Path(entry, "networks")):

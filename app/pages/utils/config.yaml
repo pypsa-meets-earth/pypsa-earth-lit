@@ -1,6 +1,6 @@
 tiles: "OSM"
 
-data_dir: "/Users/ekaterina/Documents/_github_/pypsa-africa-aux/pypsa-earth-lit"
+data_dir: "../pypsa-earth"
 
 tech_colors:
   # wind

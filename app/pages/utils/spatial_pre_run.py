@@ -77,9 +77,8 @@ def _get_gen_df(network,gpd_bus_regions):
             ((generator_network[i_carrier].p_nom_opt * generator_network_t["p_max_pu"][i_gens_idx]) - 
             generator_network_t["p"][i_gens_idx])/
             (generator_network[i_carrier].p_nom_opt * generator_network_t["p_max_pu"][i_gens_idx])
-        ).mean()
+        ).mean().clip(lower=1e-10)
         # trying to avoid the scale getting negative
-        .clip(lower=1e-10)
 
         # used potential
         carrier_df["usdpt"] = 100 * (
