@@ -30,5 +30,26 @@ def get_network_map():
             )
     return networks
 
-
+def add_logo():
+    st.markdown(
+        """
+        <style>
+            [data-testid="stSidebarNav"] {
+                background-image: url(https://raw.githubusercontent.com/drifter089/pypsa-lit-docs/main/static/img/logo.png);
+                background-repeat: no-repeat;
+                padding-top: 30px;
+                background-position: 20px 20px;
+                background-size: 70px;
+            [data-testid="stSidebarNav"]::before {
+                content: "test";
+                margin-left: 20px;
+                margin-top: 20px;
+                font-size: 30px;
+                position: relative;
+                top: 100px;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 

@@ -6,6 +6,7 @@ st.set_page_config(
 import os
 import pathlib
 import app.pages.utils.system_operation_prerun as helper
+import app.pages.utils.tools as tools
 
 import pandas as pd
 import pypsa
@@ -82,6 +83,7 @@ carriers_map = get_carrier_map()
 tech_map = dict(map(reversed, carriers_map.items()))
 tech_colors = get_colors_map()
 
+tools.add_logo()
 with main_col:
     selected_network = st.selectbox(
         "Select which scenario's plot you want to see :",

@@ -192,5 +192,5 @@ def main():
             helper.adjust_plot_appearance(current_fig=fig) 
             st.plotly_chart(fig, use_container_width=True)
 
-
+tools.add_logo()
 main()

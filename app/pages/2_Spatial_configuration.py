@@ -5,6 +5,7 @@ st.set_page_config(
 
 
 import app.pages.utils.spatial_pre_run as helper
+import app.pages.utils.tools as tools
 
 import os
 import pathlib
@@ -37,6 +38,7 @@ fix_cursor_css = '''
 '''
 
 data=helper.make_return_dict()
+tools.add_logo()
 st.title("Spatial configuration")
 
 
