@@ -5,6 +5,8 @@ import plotly.express as px
 import requests
 import streamlit as st
 
+import app.pages.utils.tools as tools
+
 from io import BytesIO
 
 # demo-pictures from the global repo
@@ -54,6 +56,8 @@ def resize_image(img, target_width, target_height, fill_color=(255, 255, 255)):
 
     return(img)    
 
+tools.add_logo()
+
 st.title("Welcome to the Energy Transition Explorer!")
 
 image_1 = Image.open(get_image(url=url_1))
@@ -71,5 +75,3 @@ st.image(
 st.header("Select a page from the sidebar to get started")
 
 st.subheader("This is a prototype of the Energy Transition Explorer. You can view the code on [GitHub](https://github.com/pypsa-meets-earth/pypsa-earth-lit)")
-
-add_logo()
