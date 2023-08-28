@@ -19,29 +19,6 @@ def get_image(url):
     r = requests.get(url)
     return BytesIO(r.content)
 
-def add_logo():
-    st.markdown(
-        """
-        <style>
-            [data-testid="stSidebarNav"] {
-                background-image: url(https://raw.githubusercontent.com/drifter089/pypsa-lit-docs/main/static/img/logo.png);
-                background-repeat: no-repeat;
-                padding-top: 30px;
-                background-position: 20px 20px;
-                background-size: 70px;
-            [data-testid="stSidebarNav"]::before {
-                content: "test";
-                margin-left: 20px;
-                margin-top: 20px;
-                font-size: 30px;
-                position: relative;
-                top: 100px;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
 def resize_image(img, target_width, target_height, fill_color=(255, 255, 255)):
     aspect = img.width / img.height
     new_width = target_width
@@ -74,4 +51,11 @@ st.image(
 
 st.header("Select a page from the sidebar to get started")
 
-st.subheader("This is a prototype of the Energy Transition Explorer. You can view the code on [GitHub](https://github.com/pypsa-meets-earth/pypsa-earth-lit)")
+st.subheader("This is a prototype of the Energy Transition Explorer. You can view the code on")
+
+st.markdown(
+        """
+        [<img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" style="float:left; margin-right:10px; width:40px;">](https://github.com/pypsa-meets-earth/pypsa-earth-lit)
+        """,
+        unsafe_allow_html=True,
+    )
