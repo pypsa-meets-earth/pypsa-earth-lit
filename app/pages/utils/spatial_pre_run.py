@@ -18,7 +18,7 @@ def get_onshore_regions():
     name_geo_dict = {}
     for dir in os.listdir(RESULTS_DIR):
         entry = pathlib.Path(RESULTS_DIR, dir)
-        if not entry.is_dir():
+        if not entry.is_dir() or dir not in config["scenario_names"]:
              continue
 
         for dir_child in os.listdir(pathlib.Path(entry, "bus_regions")):
