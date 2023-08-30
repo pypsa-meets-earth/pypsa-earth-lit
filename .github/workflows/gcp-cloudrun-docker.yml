@@ -87,7 +87,7 @@ jobs:
       - name: Build and Push Container
         run: |-
 
-          docker build -t ${{env.GAR_LOCATION}}-docker.pkg.dev/${{env.PROJECT_ID}}/${{env.SERVICE}}:${{github.sha}} --build-arg GOOGLE_APPLICATION_CREDENTIALS=${{secrets.GCP_BUCKET_SERVICE_ACCOUNT}} ./
+          docker build -t ${{env.GAR_LOCATION}}-docker.pkg.dev/${{env.PROJECT_ID}}/${{env.SERVICE}}/website:${{github.sha}} --build-arg GOOGLE_APPLICATION_CREDENTIALS=${{secrets.GCP_BUCKET_SERVICE_ACCOUNT}} ./
 
           docker push "${{env.GAR_LOCATION}}-docker.pkg.dev/${{env.PROJECT_ID}}/${{env.SERVICE}}/website:${{github.sha}}"
 
