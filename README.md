@@ -101,3 +101,35 @@ With the scenario names linked in the `config.yaml` file, you are now ready to i
 explore the insights offered by your **PyPSA-Earth** scenarios.
 
 Your path to insights is complete. Congratulations on connecting the dots between **PyPSA-Earth** and **PyPSA-Earth-Lit** !!!
+
+## Contributors
+
+<!-- https://github.com/marketplace/actions/contribute-list -->
+
+<!-- readme: collaborators,contributors,restyled-commits/- -start -->
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/pz-max">
+            <img src="https://avatars.githubusercontent.com/u/61968949?v=4" width="100;" alt="pz-max"/>
+            <br />
+            <sub><b>Max Parzen</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/akshat089">
+            <img src="https://avatars.githubusercontent.com/u/93286254?v=4" width="100;" alt="akshat089"/>
+            <br />
+            <sub><b>Akshat Mittal</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/ekatef">
+            <img src="https://avatars.githubusercontent.com/u/30229437?v=4" width="100;" alt="ekatef"/>
+            <br />
+            <sub><b>Ekaterina</b></sub>
+        </a>
+    </td>
+</tr>
+</table>
+<!-- readme: collaborators,contributors,restyled-commits/- -end -->
