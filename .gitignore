@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+**/__pycache__
+*.py[cod]
+*$py.class
+
+# General untracked file formats
+*.log
+*.pbf
+*.zip
+*ipynb
+
+# Untrack some Jupyter changes
+.ipynb_checkpoints
+notebooks/
+
+# Untrack folders
+data/
+pypsa-earth/
+.venv/
+build
+
+# 
+settings.json
+```
+pypsa_dashboard.egg-info
