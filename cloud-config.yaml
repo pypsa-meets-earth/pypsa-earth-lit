@@ -1,0 +1,20 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: '1'
+        autoscaling.knative.dev/maxScale: '20'
+    spec:
+      containers:
+        ports:
+        - name: http1
+          containerPort: 8501
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 8Gi
+        startupProbe:
+          tcpSocket:
+            port: 8501
