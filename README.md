@@ -25,18 +25,18 @@ To begin using this application, we have precompiled a solved **pypsa-earth** pr
 Depending on what you need, recommended order.
 
 ```console
-- mkdir tauritron-project
-- cd tauritron-project
-- git clone https://github.com/pypsa-meets-earth/pypsa-earth-lit.git
+mkdir tauritron-project
+cd tauritron-project
+git clone https://github.com/pypsa-meets-earth/pypsa-earth-lit.git
 ```
 
 ```console
-- make -f ./pypsa-earth-lit/Makefile get_data
-- conda env create -f ./pypsa-earth-lit/env.yaml
-- conda activate pypsa-earth-lit
-- cd pypsa-earth-lit
-- pip install -e .
-- make -f ./Makefile run_app
+make -f ./pypsa-earth-lit/Makefile get_data
+conda env create -f ./pypsa-earth-lit/env.yaml
+conda activate pypsa-earth-lit
+cd pypsa-earth-lit
+pip install -e .
+make -f ./Makefile run_app
 ```
 
 ## Result Preview
