@@ -4,7 +4,7 @@ Testing streamlit module that works along a stable pypsa-earth package version
 
 Visit the hosted version of the application at [https://tauritron.com/](https://tauritron.com/)
 
-Refer to the documentation for information about contributions and further understanding: [https://main--comforting-madeleine-30be5f.netlify.app/](https://docs.tauritron.com/](https://main--comforting-madeleine-30be5f.netlify.app/)
+Refer to the documentation for information about contributions and further understanding: [https://docs.tauritron.com/](https://main--comforting-madeleine-30be5f.netlify.app/)
 
 ## Folder Structure
 
