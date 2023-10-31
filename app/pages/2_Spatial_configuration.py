@@ -101,7 +101,7 @@ with col1:
     if(colorpeth_param=="Nothing"):
         plot_area=polygon_gpd.hvplot(
         geo=True,
-        tiles="StamenWatercolor",
+        tiles="EsriUSATopo",
         color="white",
         alpha=0.8, 
         width=800, height=800).opts(**graph_opts)
@@ -126,7 +126,7 @@ with col1:
 
         plot_area=polygon_gpd.hvplot(
         geo=True,
-        tiles="StamenWatercolor",
+        tiles="EsriUSATopo",
         alpha=0.8, 
         width=800, height=800,
         **kargs).opts(**graph_opts)
