@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY requirements.txt .
 
+COPY env.yaml .
+
 # passing the key json as argument with single quotes and replaced \n with \\n
 # single quotes to interpret double qoutes
 # \\n to interpret \n as \n not newline
@@ -34,9 +36,11 @@ RUN wget -qO /tmp/mambaforge.sh https://github.com/conda-forge/miniforge/release
 
 ENV PATH /opt/conda/bin:$PATH
 
-RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip install --no-cache-dir -r requirements.txt
 
-RUN mamba install -c conda-forge cartopy
+# RUN mamba install -c conda-forge cartopy
+
+RUN mamba env update --file env.yaml
 
 EXPOSE 8501
 
