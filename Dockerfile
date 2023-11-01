@@ -41,6 +41,8 @@ ENV PATH /opt/conda/bin:$PATH
 # RUN mamba install -c conda-forge cartopy
 
 RUN mamba env update --file env.yaml
+RUN echo "source activate pypsaviz" > ~/.bashrc
+ENV PATH /opt/conda/envs/pypsaviz/bin:$PATH
 
 EXPOSE 8501
 
